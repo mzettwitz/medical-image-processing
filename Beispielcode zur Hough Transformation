@@ -1,11 +1,10 @@
 
 
+
 bild =dicomread('IMG-0015-00001.dcm');
 %figure,imshow(bild);
-%info = dicominfo('IMG-0013-00001.dcm');
-%Y = dicomread(info);
-%figure, imshow(Y);
-%imcontrast;
+
+%Verbesserungsmöglichkeiten:
 J = imadjust(bild);
 %figure, imshow(J);
 
@@ -15,12 +14,12 @@ K = histeq(bild);
 %Übersicht Metadaten
 %dicomdisp('IMG-0013-00001.dcm');
 
-%I = imread('circuit.tif');
+
 I = bild;
 rotI = imrotate(I,33,'crop');
-% figure,imshow(rotI)
+
+
 BW = edge(rotI,'canny');
-%imshow(BW);
 [H,theta,rho] = hough(BW);
 
 % figure
@@ -37,9 +36,10 @@ hold on
 P = houghpeaks(H,5,'threshold',ceil(0.3*max(H(:))));
 
 x = theta(P(:,2));
-y = rho(P(:,1));
+y = rho(P(:,2));
 plot(x,y,'s','color','black');
-lines = houghlines(BW,theta,rho,P,'FillGap',5,'MinLength',7);
+%MinLength erhöhen reduziert Anzahl falscher Kanten
+lines = houghlines(BW,theta,rho,P,'FillGap',18,'MinLength',15);
 
 figure, imshow(rotI), hold on
 max_len = 0;
@@ -58,5 +58,6 @@ for k = 1:length(lines)
       xy_long = xy;
    end
 end
+
 %highlight the longest line segment
 plot(xy_long(:,1),xy_long(:,2),'LineWidth',2,'Color','red');
