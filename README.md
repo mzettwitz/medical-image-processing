@@ -10,3 +10,4 @@ Welche Informationen sind in den Bildern?
 Rauschunterdrückung
 Markieren der Nadel(wie)-welcher output?
 
+Beispielcode aus Bildverarbeitung: https://github.com/00Zetti/image-processing.git
