@@ -15,11 +15,20 @@ for k=1:m
     bild.(dynamische_variable)=dicomread( f) ;
     
 end 
+% Variablen fuer die anisotrope Diffusion
+num_iter = 15;
+delta_t = 1/7;
+kappa = 0.5;
+option = 1;
 
-for k=1:m 
+for k=1:m
     d = filenames{k};
     d = regexprep(d,'.dcm','');
-    d =regexprep(d,'-','_');
-    figure; %TODO: wie gibt man den nochmal namen? werden ganz schön viele fenster :D
-    imshow(bild.(d))
+    d =regexprep(d,'-','_');  
+  % figure,imshow(bild.(d));
+    bild_anisodiff = anisodiff2D(bild.(d) ,num_iter,delta_t,kappa,option);
+    ui8_bild= uint8(bild_anisodiff);
+    figure,imshow(ui8_bild)
+  % imshow(fimage)
+  % Hough((bild.(d))) 
 end
