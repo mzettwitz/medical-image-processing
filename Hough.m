@@ -1,11 +1,9 @@
 function y = Hough(bild)
 
-%bild =dicomread('IMG-0015-00001.dcm');
-%figure,imshow(bild);
-%Übersicht Metadaten
-%dicomdisp('IMG-0013-00001.dcm');
 
-%geschätzter Grauwert der Nadel
+%geschÃ¤tzter Grauwert der Nadel
+%p01: 950+-400
+%p02:-200+-700
 nadel= 950;
 v = 400;
 
@@ -17,9 +15,7 @@ for i=1:numel(M)
     end
 end
 
-%figure,imshow(M);
-
-%Verbesserungsmöglichkeiten:
+%VerbesserungsmÃ¶glichkeiten:
 J = imboxfilt(imadjust(bild));
 %figure, imshow(J);
 
@@ -28,39 +24,55 @@ K = histeq(bild);
 
 L = imboxfilt(bild,11);
 
-%verwendetes Bild für Transformation:
+%verwendetes Bild:
 rotI=M;
 
-%mögliche Methoden: Canny,log,zerocross
+%mÃ¶gliche Methoden: Canny,log,zerocross
 
 BW = edge(rotI,'canny');
 
 [H,theta,rho] = hough(BW);
 P = houghpeaks(H,5,'threshold',ceil(0.3*max(H(:))));
 
-%MinLength erhöhen reduziert Anzahl falscher Kanten
+%MinLength erhÃ¶hen reduziert Anzahl falscher Kanten
 lines = houghlines(BW,theta,rho,P,'FillGap',15,'MinLength',15);
 
-%angezeigt wird das optisch bessere Bild, nicht das für die
+x=[];
+y=[];
+max_y = 0;
+max_x=0;
+
+%angezeigt wird das optisch bessere Bild, nicht das fÃ¼r die
 %Hough-Transformation genutzte
 figure, imshow(J), hold on
-max_len = 0;
+
 for k = 1:length(lines)
-   xy = [lines(k).point1; lines(k).point2];
-   plot(xy(:,1),xy(:,2),'LineWidth',2,'Color','green');
+    
+   %Vektor mit den x bzw. y Koordinaten der Punkte
+    x = [x lines(k).point1(1) lines(k).point2(1)];
+    y = [y lines(k).point1(2) lines(k).point2(2)];
 
-   % Plot beginnings and ends of lines
-   plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
-   plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
+    % y-Koordinaten der beiden gerade betrachteten Punkte
+    y1 =  lines(k).point1(2);
+    y2 =  lines(k).point2(2);
+    
+    %Suchen des tiefsten Punktes (Nadelspitze)
+    if ( y1 > max_y)
+       max_y = y1;
+       max_x = lines(k).point1(1);
+    end
 
-   % Determine the endpoints of the longest line segment
-   len = norm(lines(k).point1 - lines(k).point2);
-   if ( len > max_len)
-      max_len = len;
-      xy_long = xy;
-   end
+    if ( y2 > max_y)
+       max_y = y1;
+       max_x = lines(k).point2(1);
+    end
 end
-%highlight the longest line segment
-plot(xy_long(:,1),xy_long(:,2),'LineWidth',2,'Color','red');
-      
+    
+    %Berechnung der Ausgleichsgerade bis zur Nadelspitze
+    p = polyfit(x,y,1);
+    t2 = 0:0.1:max_x;
+    y2 = polyval(p,t2);
+    % Anzeigen von Gerade und Nadelspitze
+    plot(max_x,polyval(p,max_x),'o',t2,y2)
+     
 end
