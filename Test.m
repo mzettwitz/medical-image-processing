@@ -2,13 +2,13 @@ close all;
 clear;
 %Pfad des Ordners, in dem die Dicom-Datein liegen
 %dcm_path = ('D:\Studium\16SoSe\MedBV\medbv_data\medbv_data\p01\'); 
-dcm_path = ('~/Dev/MedBV/data/p02/'); 
+dcm_path = ('data/p01/'); 
 % Ansammlung Dicom-Dateien
 filenames  = dir(fullfile(dcm_path, '*.dcm')); 
 % wir brauchen erstmal nur die Namen der Dateien
 filenames = {filenames.name}; 
 % m = Anzahl aller Dateien
-m = 10;%numel(filenames);               
+m = 25;%numel(filenames);               
 
 for k=1:m 
     d = filenames{k}; 
@@ -18,25 +18,42 @@ for k=1:m
     
 end 
 % Variablen fuer die anisotrope Diffusion
-num_iter = 50;
-delta_t = 1/7;
-kappa = 0.02;
+num_iter = 20;
+delta_t = 1/50;
+kappa = 8;
 option = 1;
 
 for k=1:m
     d = filenames{k};
     d = regexprep(d,'.dcm','');
     d = regexprep(d,'-','_');  
-  % figure,imshow(bild.(d));
-    img = bild.(d);
-    bild_anisodiff = anisodiff2D(bild.(d) ,num_iter,delta_t,kappa,option);
-    ui8_bild = uint8(bild_anisodiff);
-    %figure,imshow(ui8_bild,[]);
-    figure
-     
-    subplot(1,2,1), imshow(bild.(d),[])
-    subplot(1,2,2), imshow(ui8_bild,[])
     
-  % imshow(fimage)
-  % Hough(ui8_bild); 
+    img = bild.(d);
+    
+    % convert into double for window/leveling
+    img_d = im2double(img);
+    img_adj = imadjust(img_d, [0.501 0.5155],[]); %[0.5045 0.5155]
+    
+    % morphological opening
+    se = strel('rectangle', [2 4]);
+    img_morph = imclose(img_adj, se);
+    
+    % anisotropic diffusion filtering
+    img_filt = anisodiff2D(img_morph ,num_iter,delta_t,kappa,option);
+    
+    if mod(k,10) == 0
+     %  imtool(img_d); %find nice threshold for window/level every 10th img
+    end
+    
+    % print to compare
+    figure 
+    subplot(2,2,1), imshow(img,[])
+    subplot(2,2,2), imshow(img_adj)
+    subplot(2,2,3), imhist(img_adj)
+    subplot(2,2,4), imshow(img_filt)
+    
+    
+    
+   % hough transformation
+   Hough(im2int16(img_filt)); 
 end

@@ -16,13 +16,15 @@ for i=1:numel(M)
 end
 
 %Verbesserungsmöglichkeiten:
-J = imboxfilt(imadjust(bild));
+%J = imadjust(bild);
+
+J = bild;
 %figure, imshow(J);
 
-K = histeq(bild);
+%K = histeq(bild);
 %figure, imshow(K);
 
-L = imboxfilt(bild,11);
+%L = imboxfilt(bild,11);
 
 %verwendetes Bild:
 rotI=M;
@@ -44,7 +46,7 @@ max_x=0;
 
 %angezeigt wird das optisch bessere Bild, nicht das für die
 %Hough-Transformation genutzte
-figure, imshow(J), hold on
+figure, imshow(J,[]), hold on
 
 for k = 1:length(lines)
     
