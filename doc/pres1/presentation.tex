@@ -43,7 +43,8 @@
 \begin{frame}
 \frametitle{Situation}
 \begin{itemize} 
-\item dummy
+\item DICOM Datensatz mit CT Daten
+\item Biopsienadel in Schichtbildern
 \end{itemize}
 \end{frame}
 
@@ -52,7 +53,11 @@
 \begin{frame}
 \frametitle{Probleme}
 \begin{itemize}
-\item dummy
+\item Nadel strahlt
+\item Rauschen in Bildern
+\item Nadel ist teilweise nicht in Schicht sichtbar
+\item Nadelspitze unterbrochen
+\item Knochen und Nadel haben ähnliche Hounsfield Werte
 \end{itemize}
 \end{frame}
 
@@ -60,7 +65,11 @@
 \begin{frame}
 \frametitle{Lösungsansätze}
 \begin{itemize}
-\item dummy
+\item Window/Leveling
+\item Morphologisches closing
+\item Anisotroper Diffusionsfilter
+\item Hough Transformation
+\item Markieren der längsten Strecke/Ausgleichsgerade
 \end{itemize}
 \end{frame}
 
@@ -69,7 +78,9 @@
 \begin{frame}
 \frametitle{Erste Ergebnisse}
 \begin{itemize}
-\item dummy
+\item Trennen von Gewebe und Nadel meist zuverlässig
+\item Erkennen der Nadel zuverlässig wenn tiefer im Gewebe
+\item Knochen werden teilweise als Nadel interpretiert
 \end{itemize}
 \end{frame}
 

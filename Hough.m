@@ -1,7 +1,7 @@
 function y = Hough(bild)
 
 
-%geschätzter Grauwert der Nadel
+%gesch?tzter Grauwert der Nadel
 %p01: 950+-400
 %p02:-200+-700
 nadel= 950;
@@ -15,9 +15,7 @@ for i=1:numel(M)
     end
 end
 
-%Verbesserungsmöglichkeiten:
-%J = imadjust(bild);
-
+%Verbesserungsm?glichkeiten:
 J = bild;
 %figure, imshow(J);
 
@@ -27,29 +25,31 @@ J = bild;
 %L = imboxfilt(bild,11);
 
 %verwendetes Bild:
-rotI=M;
+rotI=J;
 
-%mögliche Methoden: Canny,log,zerocross
+%m?gliche Methoden: Canny,log,zerocross
 
 BW = edge(rotI,'canny');
 
 [H,theta,rho] = hough(BW);
-P = houghpeaks(H,5,'threshold',ceil(0.3*max(H(:))));
+P = houghpeaks(H,1,'threshold',ceil(0.7*max(H(:))));
 
-%MinLength erhöhen reduziert Anzahl falscher Kanten
-lines = houghlines(BW,theta,rho,P,'FillGap',15,'MinLength',15);
+%MinLength erh?hen reduziert Anzahl falscher Kanten
+lines = houghlines(BW,theta,rho,P,'FillGap',3,'MinLength',3);
 
 x=[];
 y=[];
 max_y = 0;
 max_x=0;
 
-%angezeigt wird das optisch bessere Bild, nicht das für die
+%angezeigt wird das optisch bessere Bild, nicht das f?r die
 %Hough-Transformation genutzte
-figure, imshow(J,[]), hold on
+figure, imshow(J), hold on
 
 for k = 1:length(lines)
-    
+    xy = [lines(k).point1; lines(k).point2];
+    plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
+   plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
    %Vektor mit den x bzw. y Koordinaten der Punkte
     x = [x lines(k).point1(1) lines(k).point2(1)];
     y = [y lines(k).point1(2) lines(k).point2(2)];

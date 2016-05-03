@@ -32,15 +32,15 @@ for k=1:m
     
     % convert into double for window/leveling
     img_d = im2double(img);
-    img_adj = imadjust(img_d, [0.501 0.5155],[]); %[0.5045 0.5155]
+    img_adj = imadjust(img_d, [0.5195 0.53],[]); %[0.5045 0.5155]
     
     % morphological opening
     se = strel('rectangle', [2 4]);
     img_morph = imclose(img_adj, se);
     
     % anisotropic diffusion filtering
-    img_filt = anisodiff2D(img_morph ,num_iter,delta_t,kappa,option);
-    
+    %img_filt = anisodiff2D(img_morph ,num_iter,delta_t,kappa,option);
+    img_filt = ordfilt2(img_morph,12,ones(5,5));
     if mod(k,10) == 0
      %  imtool(img_d); %find nice threshold for window/level every 10th img
     end
@@ -50,10 +50,10 @@ for k=1:m
     subplot(2,2,1), imshow(img,[])
     subplot(2,2,2), imshow(img_adj)
     subplot(2,2,3), imhist(img_adj)
-    subplot(2,2,4), imshow(img_filt)
+    %subplot(2,2,4), imshow(img_filt)
     
     
     
    % hough transformation
-   Hough(im2int16(img_filt)); 
+   Hough(im2int16(img_morph)); 
 end
