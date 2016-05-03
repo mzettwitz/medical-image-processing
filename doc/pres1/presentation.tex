@@ -1,0 +1,91 @@
+\documentclass[11pt]{beamer}
+\usetheme{Rochester}
+\usecolortheme{seagull}
+\usepackage[utf8]{inputenc}
+\usepackage[german]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{textpos}
+\usepackage{subcaption}
+\usepackage{wrapfig}
+
+% add logo to the sections
+\addtobeamertemplate{frametitle}{}{%
+\begin{textblock*}{100mm}(.6\textwidth,-1.2cm)
+\includegraphics[width=0.5\linewidth]{./logo_inf_fak.png}
+\end{textblock*}}
+
+
+\setbeamertemplate{footline}[frame number]
+
+\author{Zettwitz, Grabe, Niemann}
+\title{Automatisierte Detektion einer Biopsienadel \\ in CT-Bildatensätzen}
+\date{10.Mai 2016} 
+%\setbeamercovered{transparent}  
+%\subject{}
+
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+
+\section{Situation}
+\begin{frame}
+\frametitle{Situation}
+\begin{itemize} 
+\item DICOM Datensatz mit CT Daten
+\item Biopsienadel in Schichtbildern
+\end{itemize}
+\end{frame}
+
+%Ausgangsbild
+
+
+\subsection{Probleme}
+\begin{frame}
+\frametitle{Probleme}
+\begin{itemize}
+\item Nadel strahlt
+\item Rauschen in Bildern
+\item Nadel ist teilweise nicht in Schicht sichtbar
+\item Nadelspitze unterbrochen
+\item Knochen und Nadel haben ähnliche Hounsfield Werte
+\end{itemize}
+\end{frame}
+
+\section{Konzept}
+\begin{frame}
+\frametitle{Lösungsansätze}
+\begin{itemize}
+\item Window/Leveling
+\item Morphologisches closing
+\item Anisotroper Diffusionsfilter
+\item Hough Transformation
+\item Markieren der längsten Strecke/Ausgleichsgerade
+\end{itemize}
+\end{frame}
+
+
+\section{Erste Ergebnisse}
+\begin{frame}
+\frametitle{Erste Ergebnisse}
+\begin{itemize}
+\item Preprocessing bringt signifikaten Vorteile bei der HT
+\item Trennen von Gewebe und Nadel meist zuverlässig
+\item Erkennen der Nadel zuverlässig wenn tiefer im Gewebe
+\item Knochen werden teilweise als Nadel interpretiert
+\end{itemize}
+\end{frame}
+
+%BIld (HT ohne prepro)
+%mit prepro
+%Ausgleichsgerade
+%gutes + schlechtes Bild
+
+
+\end{document}
