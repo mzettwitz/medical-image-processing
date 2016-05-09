@@ -2,7 +2,8 @@ close all;
 clear;
 %Pfad des Ordners, in dem die Dicom-Datein liegen
 %dcm_path = ('D:\Studium\16SoSe\MedBV\medbv_data\medbv_data\p01\'); 
-dcm_path = ('data/p01/'); 
+%dcm_path = ('data/p01/'); 
+dcm_path = ('~/Dev/medBV/data/p01/'); 
 % Ansammlung Dicom-Dateien
 filenames  = dir(fullfile(dcm_path, '*.dcm')); 
 % wir brauchen erstmal nur die Namen der Dateien
@@ -12,7 +13,7 @@ m = 25;%numel(filenames);
 
 for k=1:m 
     d = filenames{k}; 
-    f = fullfile(dcm_path , d); 
+    f = fullfile(dcm_path, d); 
     dynamische_variable =  regexprep(d(1:14),'-','_');     
     bild.(dynamische_variable)=dicomread( f) ;
     
@@ -40,20 +41,21 @@ for k=1:m
     
     % anisotropic diffusion filtering
     %img_filt = anisodiff2D(img_morph ,num_iter,delta_t,kappa,option);
-    img_filt = ordfilt2(img_morph,12,ones(5,5));
+    %img_filt = ordfilt2(img_morph,15,ones(5,5));
     if mod(k,10) == 0
      %  imtool(img_d); %find nice threshold for window/level every 10th img
     end
     
     % print to compare
-    figure 
-    subplot(2,2,1), imshow(img,[])
-    subplot(2,2,2), imshow(img_adj)
-    subplot(2,2,3), imhist(img_adj)
-    %subplot(2,2,4), imshow(img_filt)
+    %figure
+   % imshow(img_filt,[])
+   % subplot(2,2,1), imshow(img,[])
+   % subplot(2,2,2), imshow(img_adj)
+   % subplot(2,2,3), imhist(img_adj)
+   % subplot(2,2,4), imshow(img_filt)
     
     
     
    % hough transformation
-   Hough(im2int16(img_morph)); 
+   Hough(im2int16(img)); 
 end

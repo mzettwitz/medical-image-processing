@@ -16,7 +16,19 @@ for i=1:numel(M)
 end
 
 %Verbesserungsm?glichkeiten:
-J = bild;
+
+img = bild;
+    
+    % convert into double for window/leveling
+    img_d = im2double(img);
+    img_adj = imadjust(img_d,[0.5195 0.53],[]); %[0.5045 0.5155]
+    
+    % morphological opening
+    se = strel('rectangle', [2 4]);
+    img_morph = imclose(img_adj, se);
+    img_filt = ordfilt2(img_morph,15,ones(5,5));
+    
+    J = img_filt;
 %figure, imshow(J);
 
 %K = histeq(bild);
@@ -32,7 +44,7 @@ rotI=J;
 BW = edge(rotI,'canny');
 
 [H,theta,rho] = hough(BW);
-P = houghpeaks(H,1,'threshold',ceil(0.7*max(H(:))));
+P = houghpeaks(H,1,'threshold',ceil(0.85*max(H(:))));
 
 %MinLength erh?hen reduziert Anzahl falscher Kanten
 lines = houghlines(BW,theta,rho,P,'FillGap',3,'MinLength',3);
@@ -40,11 +52,11 @@ lines = houghlines(BW,theta,rho,P,'FillGap',3,'MinLength',3);
 x=[];
 y=[];
 max_y = 0;
-max_x=0;
+max_x = 0;
 
 %angezeigt wird das optisch bessere Bild, nicht das f?r die
 %Hough-Transformation genutzte
-figure, imshow(J), hold on
+figure, imshow(img,[]), hold on
 
 for k = 1:length(lines)
     xy = [lines(k).point1; lines(k).point2];
@@ -75,6 +87,6 @@ end
     t2 = 0:0.1:max_x;
     y2 = polyval(p,t2);
     % Anzeigen von Gerade und Nadelspitze
-    plot(max_x,polyval(p,max_x),'o',t2,y2)
+    plot(max_x,polyval(p,max_x),'o',t2,y2, 'LineWidth', 2.5)
      
 end
