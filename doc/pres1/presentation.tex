@@ -78,12 +78,12 @@
 
 
 \section{Erste Ergebnisse}
-\subsection{Bisherige Umsetzunng}
+\subsection{Bisherige Umsetzung}
 \begin{frame}
 \frametitle{Bisherige Umsetzung}
 \begin{itemize}
 \item Einlesen aller Bilder aus einem Datensatz
-\item Filterung(Anisotroph, Statistisch)
+\item Filterung(anisotrop, statistisch)
 \item Hough Transformation mit Ausgabe: Gerade, Spitze
 \end{itemize}
 \end{frame}
@@ -92,8 +92,7 @@
 \begin{frame}[allowframebreaks]
 \frametitle{Erste Ergebnisse}
 \begin{itemize}
-\item Preprocessing bringt signifikanten Vorteile bei der HT
-\item Trennen von Gewebe und Nadel meist zuverlässig(P01)
+\item Trennen von Gewebe und Nadel unzuverlässig
 \item Erkennen der Nadel zuverlässig wenn tiefer im Gewebe
 \item Knochen werden teilweise als Nadel interpretiert
 \end{itemize}
@@ -117,10 +116,15 @@
 
 \end{frame}
 
-%BIld (HT ohne prepro)
-%mit prepro
-%Ausgleichsgerade
-%gutes + schlechtes Bild
+\subsection{Neueste Erkenntnisse}
+\begin{frame}
+\frametitle{Ausblick}
+\begin{itemize}
+\item Preprocessing bringt signifikante Vorteile bei der HT
+\item Trennen von Gewebe und Nadel meist zuverlässig(P01)
+\item Nadelspitze meist korrekt segmentiert(P01)
+\end{itemize}
+\end{frame}
 
 
 \end{document}
