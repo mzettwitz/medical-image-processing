@@ -4,3 +4,5 @@
 \beamer@subsectionintoc {1}{1}{Probleme}{3}{0}{1}
 \beamer@sectionintoc {2}{Konzept}{4}{0}{2}
 \beamer@sectionintoc {3}{Erste Ergebnisse}{5}{0}{3}
+\beamer@subsectionintoc {3}{1}{Bisherige Umsetzunng}{5}{0}{3}
+\beamer@subsectionintoc {3}{2}{Erste Ergebnisse}{6}{0}{3}

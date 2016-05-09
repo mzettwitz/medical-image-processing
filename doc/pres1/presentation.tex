@@ -41,7 +41,10 @@
 \item DICOM Datensatz mit CT Daten
 \item Biopsienadel in Schichtbildern
 \end{itemize}
-\includegraphics[scale=0.225]{../../../data/presentation/pre1/original_p1.png} 
+
+\begin{figure}[H]
+\includegraphics[width=\textwidth]{../../../data/presentation/pre1/original_p1.png}
+\end{figure} 
 \end{frame}
 
 
@@ -55,7 +58,10 @@
 \item Nadelspitze unterbrochen
 \item Knochen und Nadel haben ähnliche Hounsfield Werte
 \end{itemize}
-\includegraphics[scale=0.1875]{../../../data/presentation/pre1/original_spray_p1.png}
+
+\begin{figure}[H]
+\includegraphics[width=0.85\textwidth]{../../../data/presentation/pre1/original_spray_p1.png}
+\end{figure} 
 \end{frame}
 
 \section{Konzept}
@@ -72,14 +78,43 @@
 
 
 \section{Erste Ergebnisse}
+\subsection{Bisherige Umsetzunng}
 \begin{frame}
+\frametitle{Bisherige Umsetzung}
+\begin{itemize}
+\item Einlesen aller Bilder aus einem Datensatz
+\item Filterung(Anisotroph, Statistisch)
+\item Hough Transformation mit Ausgabe: Gerade, Spitze
+\end{itemize}
+\end{frame}
+
+\subsection{Erste Ergebnisse}
+\begin{frame}[allowframebreaks]
 \frametitle{Erste Ergebnisse}
 \begin{itemize}
-\item Preprocessing bringt signifikaten Vorteile bei der HT
-\item Trennen von Gewebe und Nadel meist zuverlässig
+\item Preprocessing bringt signifikanten Vorteile bei der HT
+\item Trennen von Gewebe und Nadel meist zuverlässig(P01)
 \item Erkennen der Nadel zuverlässig wenn tiefer im Gewebe
 \item Knochen werden teilweise als Nadel interpretiert
 \end{itemize}
+
+
+\framebreak
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.85\textheight]
+{../../../data/presentation/pre1/hough_simple_p1.png}
+\caption{Hough Transformation}
+\end{figure}
+
+\framebreak
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.85\textheight]
+{../../../data/presentation/pre1/hough_simple_fail_p1.png}
+\caption{Hough Transformation Fehler}
+\end{figure}
+
 \end{frame}
 
 %BIld (HT ohne prepro)
