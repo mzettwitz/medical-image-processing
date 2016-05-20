@@ -1,15 +1,16 @@
 close all;
 clear;
+
 %Pfad des Ordners, in dem die Dicom-Datein liegen
 %dcm_path = ('D:\Studium\16SoSe\MedBV\medbv_data\medbv_data\p01\'); 
 %dcm_path = ('../data/p01/'); 
-dcm_path = ('~/Dev/medBV/data/p01/'); 
+dcm_path = ('~/Dev/MedBV/data/p02/'); 
 % Ansammlung Dicom-Dateien
 filenames  = dir(fullfile(dcm_path, '*.dcm')); 
 % wir brauchen erstmal nur die Namen der Dateien
 filenames = {filenames.name}; 
 % m = Anzahl aller Dateien
-m = 1;%numel(filenames);               
+m = numel(filenames);               
 
 for k=1:m 
     d = filenames{k}; 
@@ -33,15 +34,15 @@ for k=1:m
     
     % convert into double for window/leveling
     img_d = im2double(img);
-    img_adj = imadjust(img_d, [0.49 0.525],[]); %[0.5045 0.5155]
+    img_adj = imadjust(img_d, [0.49 0.525]); %[0.5045 0.5155]
     
     % anisotropic diffusion filtering
-    img_filt = anisodiff2D(img_adj ,num_iter,delta_t,kappa,option);
+    %img_filt = anisodiff2D(img_adj ,num_iter,delta_t,kappa,option);
     %img_filt = ordfilt2(img_adj,15,ones(5,5));
     
     % morphological closing
     se = strel('rectangle', [2 4]);
-    img_morph = imclose(img_filt, se);
+    %img_morph = imclose(img_filt, se);
     
     if mod(k,10) == 0
        %imtool(img_d); %find nice threshold for window/level every 10th img
@@ -49,10 +50,9 @@ for k=1:m
     
     % print to compare
     figure
-    imshow(img_filt,[])
     subplot(2,2,1), imshow(img,[]), title('original')
     subplot(2,2,2), imshow(img_adj), title('window/level')
-    subplot(2,2,3), imshow(img_filt), title('filtered')
+    %subplot(2,2,3), imshow(img_filt), title('filtered')
     %subplot(2,2,4), imshow(img_morph), title('morph')
     
     

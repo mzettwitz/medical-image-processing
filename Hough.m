@@ -1,52 +1,51 @@
-function y = Hough(bild)
+function y = Hough(img)
+
+%====================================== rotation
+%imrotate(img, angle);
+rotI = imrotate(img,0);
+
+%figure imshow(rotI), title('rotated image');
 
 
-%gesch?tzter Grauwert der Nadel
-%p01: 950+-400
-%p02:-200+-700
-nadel= 950;
-v = 400;
+%====================================== edge operator
+%edge(image,'operator','options') 
+%operator = [sobel, prewitt, roberts, log, zerocross, canny] 
+BW = edge(rotI,'sobel','vertical');
 
-M = bild;
+%figure imshow(BW), title('edges');
 
-for i=1:numel(M)
-    if (M(i)<(nadel-v))||(M(i)>(nadel+v))
-        M(i) = -2048;
-    end
-end
 
-%Verbesserungsm?glichkeiten:
-    
-J = bild;
-%figure, imshow(J);
+%====================================== hough space
+%[K,T,R] = hough(BW,'Theta', -85:0.05:85);
+%K = imresize(K,[400 800]);
+%figure imshow(K,[]), title('scaled hough space');
 
-%K = histeq(bild);
-%figure, imshow(K);
+[H,theta,rho] = hough(BW,'Theta', -45:0.05:15);
+%hough(edgeImage,'option', value(s))
 
-%L = imboxfilt(bild,11);
 
-%verwendetes Bild:
-rotI=J;
+%====================================== hough peaks
+%houghpeaks(houghMatrix, numberOfPeaks,'option',value;
+P = houghpeaks(H,1,'threshold',0.85*max(H(:)));
 
-%m?gliche Methoden: Canny,log,zerocross
+%figure imshow(H,[]), title('hough space'), hold on;
+% p_x = theta(P(:,2)); p_y = rho(P(:,1)); plot(p_x,p_y,'s','color','red');
 
-BW = edge(rotI,'canny');
+%====================================== hough lines
+%houghlines(edgeImg,theta,rho,peaks,'option', value);
+lines = houghlines(BW,theta,rho,P,'FillGap',2.5,'MinLength',4.5);
 
-[H,theta,rho] = hough(BW);
-P = houghpeaks(H,1,'threshold',ceil(0.85*max(H(:))));
 
-%MinLength erh?hen reduziert Anzahl falscher Kanten
-lines = houghlines(BW,theta,rho,P,'FillGap',3,'MinLength',3);
-
+%====================================== print lines
 x = [];
 y = [];
 max_y = 0;
 max_x = 0;
 
+
 %angezeigt wird das optisch bessere Bild, nicht das f?r die
 %Hough-Transformation genutzte
-figure, imshow(imadjust(mat2gray(H)),'XData',theta,'YData',rho,...
-      'InitialMagnification','fit'), hold on
+figure, imshow(rotI,[]), title('lines in image'), hold on
 
 for k = 1:length(lines)
     xy = [lines(k).point1; lines(k).point2];
@@ -77,6 +76,6 @@ end
     t2 = 0:0.1:max_x;
     y2 = polyval(p,t2);
     % Anzeigen von Gerade und Nadelspitze
-    plot(max_x,polyval(p,max_x),'o',t2,y2, 'LineWidth', 2.5)
+    plot(max_x,polyval(p,max_x),'o',t2,y2, 'LineWidth',2)
      
 end
