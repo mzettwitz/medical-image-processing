@@ -16,19 +16,8 @@ for i=1:numel(M)
 end
 
 %Verbesserungsm?glichkeiten:
-
-img = bild;
     
-    % convert into double for window/leveling
-    img_d = im2double(img);
-    img_adj = imadjust(img_d,[0.5195 0.53],[]); %[0.5045 0.5155]
-    
-    % morphological opening
-    se = strel('rectangle', [2 4]);
-    img_morph = imclose(img_adj, se);
-    img_filt = ordfilt2(img_morph,15,ones(5,5));
-    
-    J = img_filt;
+J = bild;
 %figure, imshow(J);
 
 %K = histeq(bild);
@@ -49,20 +38,21 @@ P = houghpeaks(H,1,'threshold',ceil(0.85*max(H(:))));
 %MinLength erh?hen reduziert Anzahl falscher Kanten
 lines = houghlines(BW,theta,rho,P,'FillGap',3,'MinLength',3);
 
-x=[];
-y=[];
+x = [];
+y = [];
 max_y = 0;
 max_x = 0;
 
 %angezeigt wird das optisch bessere Bild, nicht das f?r die
 %Hough-Transformation genutzte
-figure, imshow(img,[]), hold on
+figure, imshow(imadjust(mat2gray(H)),'XData',theta,'YData',rho,...
+      'InitialMagnification','fit'), hold on
 
 for k = 1:length(lines)
     xy = [lines(k).point1; lines(k).point2];
     plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
-   plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
-   %Vektor mit den x bzw. y Koordinaten der Punkte
+    plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
+    %Vektor mit den x bzw. y Koordinaten der Punkte
     x = [x lines(k).point1(1) lines(k).point2(1)];
     y = [y lines(k).point1(2) lines(k).point2(2)];
 
