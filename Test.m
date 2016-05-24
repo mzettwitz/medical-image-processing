@@ -10,7 +10,7 @@ filenames  = dir(fullfile(dcm_path, '*.dcm'));
 % wir brauchen erstmal nur die Namen der Dateien
 filenames = {filenames.name}; 
 % m = Anzahl aller Dateien
-m = numel(filenames);               
+m = 25;%numel(filenames);               
 
 for k=1:m 
     d = filenames{k}; 
@@ -49,9 +49,9 @@ for k=1:m
     end
     
     % print to compare
-    figure
-    subplot(2,2,1), imshow(img,[]), title('original')
-    subplot(2,2,2), imshow(img_adj), title('window/level')
+    %figure
+    %subplot(2,2,1), imshow(img,[]), title('original')
+    %subplot(2,2,2), imshow(img_adj), title('window/level')
     %subplot(2,2,3), imshow(img_filt), title('filtered')
     %subplot(2,2,4), imshow(img_morph), title('morph')
     

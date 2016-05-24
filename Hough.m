@@ -4,7 +4,7 @@ function y = Hough(img)
 %imrotate(img, angle);
 rotI = imrotate(img,0);
 
-%figure imshow(rotI), title('rotated image');
+%figure, imshow(rotI), title('rotated image');
 
 
 %====================================== edge operator
@@ -12,24 +12,26 @@ rotI = imrotate(img,0);
 %operator = [sobel, prewitt, roberts, log, zerocross, canny] 
 BW = edge(rotI,'sobel','vertical');
 
-%figure imshow(BW), title('edges');
+%figure, imshow(BW), title('edges');
 
 
 %====================================== hough space
 %[K,T,R] = hough(BW,'Theta', -85:0.05:85);
 %K = imresize(K,[400 800]);
-%figure imshow(K,[]), title('scaled hough space');
+%figure, imshow(K,[]), title('scaled hough space');
 
-[H,theta,rho] = hough(BW,'Theta', -45:0.05:15);
 %hough(edgeImage,'option', value(s))
+[H,theta,rho] = hough(BW,'Theta', -45:0.05:15);
+
 
 
 %====================================== hough peaks
 %houghpeaks(houghMatrix, numberOfPeaks,'option',value;
 P = houghpeaks(H,1,'threshold',0.85*max(H(:)));
 
-%figure imshow(H,[]), title('hough space'), hold on;
+%figure, imshow(H,[]), title('hough space'), hold on;
 % p_x = theta(P(:,2)); p_y = rho(P(:,1)); plot(p_x,p_y,'s','color','red');
+
 
 %====================================== hough lines
 %houghlines(edgeImg,theta,rho,peaks,'option', value);
@@ -41,7 +43,6 @@ x = [];
 y = [];
 max_y = 0;
 max_x = 0;
-
 
 %angezeigt wird das optisch bessere Bild, nicht das f?r die
 %Hough-Transformation genutzte
