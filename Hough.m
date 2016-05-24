@@ -21,15 +21,14 @@ BW = edge(rotI,'sobel','vertical');
 %figure, imshow(K,[]), title('scaled hough space');
 
 %hough(edgeImage,'option', value(s))
-[H,theta,rho] = hough(BW,'Theta', -45:0.05:15);
-
+[H,theta,rho] = hough(BW,'Theta', -45:0.05:45);
 
 
 %====================================== hough peaks
 %houghpeaks(houghMatrix, numberOfPeaks,'option',value;
 P = houghpeaks(H,1,'threshold',0.85*max(H(:)));
 
-%figure, imshow(H,[]), title('hough space'), hold on;
+figure, imshow(H,[]), title('hough space'), hold on;
 % p_x = theta(P(:,2)); p_y = rho(P(:,1)); plot(p_x,p_y,'s','color','red');
 
 

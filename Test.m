@@ -4,7 +4,7 @@ clear;
 %Pfad des Ordners, in dem die Dicom-Datein liegen
 %dcm_path = ('D:\Studium\16SoSe\MedBV\medbv_data\medbv_data\p01\'); 
 %dcm_path = ('../data/p01/'); 
-dcm_path = ('~/Dev/MedBV/data/p02/'); 
+dcm_path = ('~/Dev/MedBV/data/p03/'); 
 % Ansammlung Dicom-Dateien
 filenames  = dir(fullfile(dcm_path, '*.dcm')); 
 % wir brauchen erstmal nur die Namen der Dateien
