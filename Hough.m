@@ -1,4 +1,4 @@
-function y = Hough(img)
+function [y,max_x] = Hough(img)
 
 %====================================== rotation
 %imrotate(img, angle);
@@ -47,7 +47,8 @@ max_x = 0;
 %angezeigt wird das optisch bessere Bild, nicht das f?r die
 %Hough-Transformation genutzte
 figure, imshow(rotI,[]), title('lines in image'), hold on
-
+min_x = 0;
+min_y = 0;
 for k = 1:length(lines)
     xy = [lines(k).point1; lines(k).point2];
     plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
@@ -59,7 +60,19 @@ for k = 1:length(lines)
     % y-Koordinaten der beiden gerade betrachteten Punkte
     y1 =  lines(k).point1(2);
     y2 =  lines(k).point2(2);
-    
+    if (min_y == 0)
+        min_y = y1;
+        min_x = lines(k).point1(1);
+    end
+    %Suchen des höchsten Punktes (Nadelspitze)
+    if ( y1 < min_y)
+        min_y = y1;
+        min_x = lines(k).point1(1);
+    end
+    if ( y2 < max_y)
+       min_y = y2;
+       min_x = lines(k).point2(1);
+    end
     %Suchen des tiefsten Punktes (Nadelspitze)
     if ( y1 > max_y)
        max_y = y1;
@@ -67,16 +80,18 @@ for k = 1:length(lines)
     end
 
     if ( y2 > max_y)
-       max_y = y1;
+       max_y = y2;
        max_x = lines(k).point2(1);
     end
 end
-    
+    plot(min_y,min_x,'x', 'Color','blue');
+    edist = sqrt((min_x-min_y)^2 + (max_x-max_y)^2)
     %Berechnung der Ausgleichsgerade bis zur Nadelspitze
     p = polyfit(x,y,1);
     t2 = 0:0.1:max_x;
     y2 = polyval(p,t2);
+    p1 = polyval(p,max_x);
     % Anzeigen von Gerade und Nadelspitze
-    plot(max_x,polyval(p,max_x),'o',t2,y2, 'LineWidth',2)
-     
+    plot(max_x,p1,'o',t2,y2, 'LineWidth',2);
+    
 end
