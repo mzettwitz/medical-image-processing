@@ -69,7 +69,7 @@ for k = 1:length(lines)
         min_y = y1;
         min_x = lines(k).point1(1);
     end
-    if ( y2 < max_y)
+    if ( y2 < min_y)
        min_y = y2;
        min_x = lines(k).point2(1);
     end
