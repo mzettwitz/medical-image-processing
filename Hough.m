@@ -87,7 +87,7 @@ end
     plot(min_x,min_y,'x', 'Color','blue');
     plot(max_x,max_y,'x', 'Color','green');
     %Berechnen der Euklidischen Distanz
-    edist = sqrt((min_x-min_y)^2 + (max_x-max_y)^2)
+    edist = sqrt((min_x-max_x)^2 + (min_y-max_y)^2)
     %Berechnung der Ausgleichsgerade bis zur Nadelspitze
     p = polyfit(x,y,1);
     t2 = 0:0.1:max_x;
