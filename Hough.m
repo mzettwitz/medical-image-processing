@@ -51,8 +51,8 @@ min_x = 0;
 min_y = 0;
 for k = 1:length(lines)
     xy = [lines(k).point1; lines(k).point2];
-    plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
-    plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
+   % plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
+   % plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
     %Vektor mit den x bzw. y Koordinaten der Punkte
     x = [x lines(k).point1(1) lines(k).point2(1)];
     y = [y lines(k).point1(2) lines(k).point2(2)];
@@ -84,7 +84,9 @@ for k = 1:length(lines)
        max_x = lines(k).point2(1);
     end
 end
-    plot(min_y,min_x,'x', 'Color','blue');
+    plot(min_x,min_y,'x', 'Color','blue');
+    plot(max_x,max_y,'x', 'Color','green');
+    %Berechnen der Euklidischen Distanz
     edist = sqrt((min_x-min_y)^2 + (max_x-max_y)^2)
     %Berechnung der Ausgleichsgerade bis zur Nadelspitze
     p = polyfit(x,y,1);
