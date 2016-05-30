@@ -21,8 +21,7 @@ BW = edge(rotI,'sobel','vertical');
 %figure, imshow(K,[]), title('scaled hough space');
 
 %hough(edgeImage,'option', value(s))
-[H,theta,rho] = hough(BW,'Theta', -45:0.05:15);
-
+[H,theta,rho] = hough(BW,'Theta', -45:0.05:45);
 
 
 %====================================== hough peaks
@@ -30,7 +29,7 @@ BW = edge(rotI,'sobel','vertical');
 P = houghpeaks(H,1,'threshold',0.85*max(H(:)));
 
 %figure, imshow(H,[]), title('hough space'), hold on;
-% p_x = theta(P(:,2)); p_y = rho(P(:,1)); plot(p_x,p_y,'s','color','red');
+%p_x = theta(P(:,2)); p_y = rho(P(:,1)); plot(p_x,p_y,'s','color','red');
 
 
 %====================================== hough lines
@@ -72,11 +71,25 @@ for k = 1:length(lines)
     end
 end
     
-    %Berechnung der Ausgleichsgerade bis zur Nadelspitze
-    p = polyfit(x,y,1);
-    t2 = 0:0.1:max_x;
-    y2 = polyval(p,t2);
-    % Anzeigen von Gerade und Nadelspitze
-    plot(max_x,polyval(p,max_x),'o',t2,y2, 'LineWidth',2)
+    % Finden des hellsten Punktes (Nadelspitze)
+    % Auslassen von Artefakten(p01, Rand)
+    max_bright = max(img(:));
+    [r, c] = find(img == max_bright); 
+    cond_c = c < (size(img,1) * 0.9);
+    pos = max(find(c == max(c(cond_c))));
+    n_x = c(pos); n_y = r(pos);
+    plot(n_x, n_y, 'o', 'Color', 'g')
+    %plot(c, r, 'o', 'Color', 'g')  % all points
+    
+    if(max_y <= n_y*1.1)
+        %Berechnung der Ausgleichsgerade bis zur Nadelspitze
+        p = polyfit(x,y,1);
+        t2 = 0:0.1:max_x;
+        y2 = polyval(p,t2);
+        % Anzeigen von Gerade und Nadelspitze
+        plot(max_x,polyval(p,max_x),'o',t2,y2, 'LineWidth',2)
+    end
+    
+    
      
 end
