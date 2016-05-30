@@ -71,16 +71,25 @@ for k = 1:length(lines)
     end
 end
     
-    %Berechnung der Ausgleichsgerade bis zur Nadelspitze
-    p = polyfit(x,y,1);
-    t2 = 0:0.1:max_x;
-    y2 = polyval(p,t2);
-    % Anzeigen von Gerade und Nadelspitze
-    plot(max_x,polyval(p,max_x),'o',t2,y2, 'LineWidth',2)
-    
     % Finden des hellsten Punktes (Nadelspitze)
+    % Auslassen von Artefakten(p01, Rand)
     max_bright = max(img(:));
-    [r, c] = find(img == max_bright);
-    plot(c, r, 'o', 'Color', 'g')
+    [r, c] = find(img == max_bright); 
+    cond_c = c < (size(img,1) * 0.9);
+    pos = max(find(c == max(c(cond_c))));
+    n_x = c(pos); n_y = r(pos);
+    plot(n_x, n_y, 'o', 'Color', 'g')
+    %plot(c, r, 'o', 'Color', 'g')  % all points
+    
+    if(max_y <= n_y*1.1)
+        %Berechnung der Ausgleichsgerade bis zur Nadelspitze
+        p = polyfit(x,y,1);
+        t2 = 0:0.1:max_x;
+        y2 = polyval(p,t2);
+        % Anzeigen von Gerade und Nadelspitze
+        plot(max_x,polyval(p,max_x),'o',t2,y2, 'LineWidth',2)
+    end
+    
+    
      
 end
