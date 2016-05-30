@@ -58,5 +58,5 @@ for k=1:m
     
     
    % hough transformation
-   [image,max_x] = Hough(im2int16(img_adj)); 
+    [image,max_x] = Hough(im2int16(img_adj)); 
 end
