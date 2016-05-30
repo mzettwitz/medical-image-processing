@@ -28,8 +28,8 @@ BW = edge(rotI,'sobel','vertical');
 %houghpeaks(houghMatrix, numberOfPeaks,'option',value;
 P = houghpeaks(H,1,'threshold',0.85*max(H(:)));
 
-figure, imshow(H,[]), title('hough space'), hold on;
-% p_x = theta(P(:,2)); p_y = rho(P(:,1)); plot(p_x,p_y,'s','color','red');
+%figure, imshow(H,[]), title('hough space'), hold on;
+%p_x = theta(P(:,2)); p_y = rho(P(:,1)); plot(p_x,p_y,'s','color','red');
 
 
 %====================================== hough lines
@@ -77,5 +77,10 @@ end
     y2 = polyval(p,t2);
     % Anzeigen von Gerade und Nadelspitze
     plot(max_x,polyval(p,max_x),'o',t2,y2, 'LineWidth',2)
+    
+    % Finden des hellsten Punktes (Nadelspitze)
+    max_bright = max(img(:));
+    [r, c] = find(img == max_bright);
+    plot(c, r, 'o', 'Color', 'g')
      
 end
