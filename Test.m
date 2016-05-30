@@ -4,14 +4,23 @@ clear;
 %Pfad des Ordners, in dem die Dicom-Datein liegen
 dcm_path = ('D:\Studium\16SoSe\MedBV\medbv_data\medbv_data\p01\'); 
 %dcm_path = ('../data/p01/'); 
+<<<<<<< HEAD
 %dcm_path = ('~/Dev/MedBV/data/p02/'); 
+=======
+dcm_path = ('~/Dev/MedBV/data/p01/'); 
+>>>>>>> refs/remotes/origin/testing
 % Ansammlung Dicom-Dateien
 filenames  = dir(fullfile(dcm_path, '*.dcm')); 
 % wir brauchen erstmal nur die Namen der Dateien
 filenames = {filenames.name}; 
 % m = Anzahl aller Dateien
+<<<<<<< HEAD
 %m = numel(filenames);               
 m = 10;
+=======
+m = 5;%numel(filenames);               
+
+>>>>>>> refs/remotes/origin/testing
 for k=1:m 
     d = filenames{k}; 
     f = fullfile(dcm_path, d); 
@@ -54,8 +63,6 @@ for k=1:m
     %subplot(2,2,2), imshow(img_adj), title('window/level')
     %subplot(2,2,3), imshow(img_filt), title('filtered')
     %subplot(2,2,4), imshow(img_morph), title('morph')
-    
-    
     
    % hough transformation
     [image,max_x] = Hough(im2int16(img_adj)); 
