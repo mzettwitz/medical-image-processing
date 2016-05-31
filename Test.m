@@ -25,7 +25,7 @@ delta_t = 1/50;
 kappa = 8;
 option = 1;
 
-for k=1:m
+for k=10:m
     d = filenames{k};
     d = regexprep(d,'.dcm','');
     d = regexprep(d,'-','_');  

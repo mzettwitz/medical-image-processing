@@ -76,7 +76,7 @@ end
     max_bright = max(img(:));
     [r, c] = find(img == max_bright); 
     cond_c = c < (size(img,1) * 0.9);
-    pos = max(find(c == max(c(cond_c))));
+    pos = find(c(cond_c) == max(c(cond_c)), 1, 'last' );
     n_x = c(pos); n_y = r(pos);
     plot(n_x, n_y, 'o', 'Color', 'g')
     %plot(c, r, 'o', 'Color', 'g')  % all points
