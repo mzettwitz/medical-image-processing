@@ -42,8 +42,8 @@ x = [];
 y = [];
 max_x = 0;
 max_y = 0;
-min_x = 99999;
-min_y = 99999;
+min_x = lines(1).point1(1);
+min_y = lines(1).point1(2);
 
 %angezeigt wird das optisch bessere Bild, nicht das f?r die
 %Hough-Transformation genutzte
