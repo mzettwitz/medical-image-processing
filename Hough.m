@@ -40,8 +40,10 @@ lines = houghlines(BW,theta,rho,P,'FillGap',2.5,'MinLength',4.5);
 %====================================== print lines
 x = [];
 y = [];
-max_y = 0;
 max_x = 0;
+max_y = 0;
+min_x = 99999;
+min_y = 99999;
 
 %angezeigt wird das optisch bessere Bild, nicht das f?r die
 %Hough-Transformation genutzte
@@ -66,11 +68,23 @@ for k = 1:length(lines)
     end
 
     if ( y2 > max_y)
-       max_y = y1;
+       max_y = y2;
        max_x = lines(k).point2(1);
+    end
+    
+    % Suchen des höchsten Punktes (Nadelschaft)
+    if(y1 < min_y)
+       min_y = y1;
+       min_x = lines(k).point1(1);
+    end
+    
+    if(y2 < min_y)
+       min_y = y2;
+       min_x = lines(k).point2(1);
     end
 end
     
+
     % Finden des hellsten Punktes (Nadelspitze)
     % Auslassen von Artefakten(p01, Rand)
     max_bright = max(img(:));
@@ -81,13 +95,17 @@ end
     plot(n_x, n_y, 'o', 'Color', 'g')
     %plot(c, r, 'o', 'Color', 'g')  % all points
     
-    if(max_y <= n_y*1.1)
+    p_x = [n_x min_x ];
+    p_y = [n_y min_y];
+    if(min_y <= n_y)
         %Berechnung der Ausgleichsgerade bis zur Nadelspitze
-        p = polyfit(x,y,1);
-        t2 = 0:0.1:max_x;
-        y2 = polyval(p,t2);
+        %p = polyfit(x,y,1);
+        %t2 = 0:0.1:n_x;
+        %y2 = polyval(p,t2);
         % Anzeigen von Gerade und Nadelspitze
-        plot(max_x,polyval(p,max_x),'o',t2,y2, 'LineWidth',2)
+        %plot(n_x,polyval(p,n_x),'o',t2,y2, 'LineWidth',2)
+        plot(p_x, p_y, 'Color', 'g','LineWidth',2)
+        
     end
     
     
