@@ -3,7 +3,6 @@ function y = Hough(img)
 %====================================== rotation
 %imrotate(img, angle);
 rotI = imrotate(img,0);
-
 %figure, imshow(rotI), title('rotated image');
 
 
@@ -21,7 +20,7 @@ BW = edge(rotI,'sobel','vertical');
 %figure, imshow(K,[]), title('scaled hough space');
 
 %hough(edgeImage,'option', value(s))
-[H,theta,rho] = hough(BW,'Theta', -45:0.05:45);
+[H,theta,rho] = hough(BW,'Theta', -40:0.05:40);
 
 
 %====================================== hough peaks
@@ -86,10 +85,10 @@ end
     
 
     % Finden des hellsten Punktes (Nadelspitze)
-    % Auslassen von Artefakten(p01, Rand)
+    % Auslassen von Artefakten(p01, Rand), Gebieten am Rand
     max_bright = max(img(:));
     [r, c] = find(img == max_bright); 
-    cond_c = c < (size(img,1) * 0.9);
+    cond_c = c > (size(img,1) * 0.1) & c < (size(img,1) * 0.9);
     pos = find(c(cond_c) == max(c(cond_c)), 1, 'last' );
     n_x = c(pos); n_y = r(pos);
     plot(n_x, n_y, 'o', 'Color', 'g')
@@ -103,7 +102,7 @@ end
         %t2 = 0:0.1:n_x;
         %y2 = polyval(p,t2);
         % Anzeigen von Gerade und Nadelspitze
-        %plot(n_x,polyval(p,n_x),'o',t2,y2, 'LineWidth',2)
+        %plot(p_x,polyval(p,p_x),'o',t2,y2, 'LineWidth',2)
         plot(p_x, p_y, 'Color', 'g','LineWidth',2)
         
     end
