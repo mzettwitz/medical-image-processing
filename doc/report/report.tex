@@ -1,0 +1,100 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[fleqn]{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{natbib}
+\usepackage{url}
+\usepackage[top=1in, bottom=1.25in, left=1.5in, right=1.5in]{geometry}
+\usepackage{titlesec}
+
+\begin{document}
+	
+%%Title Page
+\begin{titlepage}
+\title{Automatisierte Segmentierung \\ einer Nadel aus einem CT-Datensatz}
+\date{05.04.2016 - 28.06.2016}
+\author{Martin Zettwitz,  Elke Grabe,  Annika Niemann}
+\maketitle
+
+
+\begin{center}
+\includegraphics[width=0.7\linewidth]{../../../data/report/logo_inf_fak.png}
+\end{center}
+
+
+
+
+\end{titlepage}
+
+\tableofcontents
+
+
+\newpage
+\section{Einleitung}
+\label{sec:Einleitung}
+
+
+\newpage
+\section{System}
+\label{sec:System}
+
+
+
+\newpage
+\section{Projektmanagement}
+\label{sec:Projektmanagemt}
+
+
+
+%Kapitel
+\newpage
+\section{Name}
+\label{sec:Name}
+TEXTTEXTTEXTTEXT
+
+%Unterkapitel
+\newpage
+\subsection{Name}
+\label{sec:Name2}
+TEXT
+
+% Template für Mathematische Gleichung
+\begin{equation}
+L_o(x,\vec{\omega_o})= \delta \cdot L_i(x,\vec{\omega_r}) + (1-\delta) L_i(x,\vec{\omega_t})
+\end{equation}
+
+% Template für Tabelle
+% Spalte X Inhalt 	& 	Spalte X+1 Inhalt	\\ \hline
+% Inhalt zwischen zwei $-Zeichen ist mathematischer Inhalt
+\begin{table}[H]
+\begin{tabular}{| c | l |}
+\hline
+$\delta$ & reflectivity of a dieletric\\ \hline
+$\vec{\omega_r}$ & reflected view direction\\ \hline
+$\vec{\omega_t}$ & transmitted view direction\\ \hline
+\end{tabular}
+\end{table}
+
+%Beispiel für Referenz (Referenz unter Bubliography Eintragen)
+A nice way to calculate $\delta$ is to use Schlick's Approximation \cite{Sch94}:
+
+
+% Beispiel für Grafik -> Pfade refernzieren wir auf ../../../data/report/grafik.png
+%\begin{figure}[H]
+%\caption{Parameter $n_t$ from $1.0$ to $2.0$}
+%\includegraphics[width=\textwidth]{glasscomplete.png}
+%\end{figure}
+
+\newpage
+\section{Ergebnisse}
+\label{sec::Ergebnisse}
+
+
+\newpage
+\addcontentsline{toc}{section}{References}
+\bibliography{report}
+\bibliographystyle{alpha}
+\end{document}
