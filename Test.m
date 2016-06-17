@@ -8,20 +8,25 @@ cd(pathstr);
 parent = pwd;
 addpath(genpath(parent));
 
-
+patient = 'p03'; %p01,p02,p03
 %Pfad des Ordners, in dem die Dicom-Datein liegen
-dcm_path = ('../data/p01/'); 
+dcm_path = (strcat('../data/',patient)); 
 filenames  = dir(fullfile(dcm_path, '*.dcm')); 
 filenames = {filenames.name}; 
 % m = Anzahl aller Dateien
 m = numel(filenames);               
+
+% =================== read ground truth
+pat_number = patient(3);
+gt_path = strcat('../data/ground_truth/p', pat_number, '_needle_positions.csv');
+gt_data = csvread(gt_path, 1, 1);
 
 % store images in array
 for k=1:m 
     d = filenames{k}; 
     f = fullfile(dcm_path, d); 
     dynamische_variable =  regexprep(d(1:14),'-','_');     
-    bild.(dynamische_variable)=dicomread( f) ;
+    bild.(dynamische_variable)=dicomread( f);
     
 end 
 
@@ -79,6 +84,13 @@ for k=1:m
 %         
 %     end
     
+   % ground truth plot
+   x = [gt_data(k,1) gt_data(k,3)];
+   y = [gt_data(k,2) gt_data(k,4)];
+   figure, imshow(im2int16(img_adj),[]), title('window/level'), hold on
+   plot(x, y, 'Color', 'r','LineWidth',2)
+   hold off
+   
    % hough transformation
    Hough(im2int16(img_adj)); 
 end
