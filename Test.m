@@ -1,17 +1,22 @@
 close all;
 clear;
 
+% add path to example data
+file = mfilename('fullpath');
+[pathstr,name,ext] = fileparts(file);
+cd(pathstr);
+parent = pwd;
+addpath(genpath(parent));
+
+
 %Pfad des Ordners, in dem die Dicom-Datein liegen
-%dcm_path = ('D:\Studium\16SoSe\MedBV\medbv_data\medbv_data\p01\'); 
-%dcm_path = ('../data/p01/'); 
-dcm_path = ('~/Dev/MedBV/data/p01/'); 
-% Ansammlung Dicom-Dateien
+dcm_path = ('../data/p01/'); 
 filenames  = dir(fullfile(dcm_path, '*.dcm')); 
-% wir brauchen erstmal nur die Namen der Dateien
 filenames = {filenames.name}; 
 % m = Anzahl aller Dateien
 m = numel(filenames);               
 
+% store images in array
 for k=1:m 
     d = filenames{k}; 
     f = fullfile(dcm_path, d); 
@@ -19,6 +24,7 @@ for k=1:m
     bild.(dynamische_variable)=dicomread( f) ;
     
 end 
+
 % Variablen fuer die anisotrope Diffusion
 num_iter = 20;
 delta_t = 1/50;
