@@ -1,56 +1,58 @@
-function y = Hough(bild)
+function y = Hough(img)
+
+%====================================== rotation
+%imrotate(img, angle);
+rotI = imrotate(img,0);
+%figure, imshow(rotI), title('rotated image');
 
 
-%gesch?tzter Grauwert der Nadel
-%p01: 950+-400
-%p02:-200+-700
-nadel= 950;
-v = 400;
+%====================================== edge operator
+%edge(image,'operator','options') 
+%operator = [sobel, prewitt, roberts, log, zerocross, canny] 
+BW = edge(rotI,'sobel','vertical');
 
-M = bild;
+%figure, imshow(BW), title('edges');
 
-for i=1:numel(M)
-    if (M(i)<(nadel-v))||(M(i)>(nadel+v))
-        M(i) = -2048;
-    end
-end
 
-%Verbesserungsm?glichkeiten:
-J = bild;
-%figure, imshow(J);
+%====================================== hough space
+%[K,T,R] = hough(BW,'Theta', -85:0.05:85);
+%K = imresize(K,[400 800]);
+%figure, imshow(K,[]), title('scaled hough space');
 
-%K = histeq(bild);
-%figure, imshow(K);
+%hough(edgeImage,'option', value(s))
+[H,theta,rho] = hough(BW,'Theta', -40:0.05:40);
 
-%L = imboxfilt(bild,11);
 
-%verwendetes Bild:
-rotI=J;
+%====================================== hough peaks
+%houghpeaks(houghMatrix, numberOfPeaks,'option',value;
+P = houghpeaks(H,1,'threshold',0.85*max(H(:)));
 
-%m?gliche Methoden: Canny,log,zerocross
+%figure, imshow(H,[]), title('hough space'), hold on;
+%p_x = theta(P(:,2)); p_y = rho(P(:,1)); plot(p_x,p_y,'s','color','red');
 
-BW = edge(rotI,'canny');
 
-[H,theta,rho] = hough(BW);
-P = houghpeaks(H,1,'threshold',ceil(0.7*max(H(:))));
+%====================================== hough lines
+%houghlines(edgeImg,theta,rho,peaks,'option', value);
+lines = houghlines(BW,theta,rho,P,'FillGap',2.5,'MinLength',4.5);
 
-%MinLength erh?hen reduziert Anzahl falscher Kanten
-lines = houghlines(BW,theta,rho,P,'FillGap',3,'MinLength',3);
 
-x=[];
-y=[];
+%====================================== print lines
+x = [];
+y = [];
+max_x = 0;
 max_y = 0;
-max_x=0;
+min_x = lines(1).point1(1);
+min_y = lines(1).point1(2);
 
 %angezeigt wird das optisch bessere Bild, nicht das f?r die
 %Hough-Transformation genutzte
-figure, imshow(J), hold on
+figure, imshow(rotI,[]), title('lines in image'), hold on
 
 for k = 1:length(lines)
     xy = [lines(k).point1; lines(k).point2];
     plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
-   plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
-   %Vektor mit den x bzw. y Koordinaten der Punkte
+    plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
+    %Vektor mit den x bzw. y Koordinaten der Punkte
     x = [x lines(k).point1(1) lines(k).point2(1)];
     y = [y lines(k).point1(2) lines(k).point2(2)];
 
@@ -65,16 +67,46 @@ for k = 1:length(lines)
     end
 
     if ( y2 > max_y)
-       max_y = y1;
+       max_y = y2;
        max_x = lines(k).point2(1);
+    end
+    
+    % Suchen des höchsten Punktes (Nadelschaft)
+    if(y1 < min_y)
+       min_y = y1;
+       min_x = lines(k).point1(1);
+    end
+    
+    if(y2 < min_y)
+       min_y = y2;
+       min_x = lines(k).point2(1);
     end
 end
     
-    %Berechnung der Ausgleichsgerade bis zur Nadelspitze
-    p = polyfit(x,y,1);
-    t2 = 0:0.1:max_x;
-    y2 = polyval(p,t2);
-    % Anzeigen von Gerade und Nadelspitze
-    plot(max_x,polyval(p,max_x),'o',t2,y2)
+
+    % Finden des hellsten Punktes (Nadelspitze)
+    % Auslassen von Artefakten(p01, Rand), Gebieten am Rand
+    max_bright = max(img(:));
+    [r, c] = find(img == max_bright); 
+    cond_c = c > (size(img,1) * 0.1) & c < (size(img,1) * 0.9);
+    pos = find(c(cond_c) == max(c(cond_c)), 1, 'last' );
+    n_x = c(pos); n_y = r(pos);
+    plot(n_x, n_y, 'o', 'Color', 'g')
+    %plot(c, r, 'o', 'Color', 'g')  % all points
+    
+    p_x = [n_x min_x ];
+    p_y = [n_y min_y];
+    if(min_y <= n_y)
+        %Berechnung der Ausgleichsgerade bis zur Nadelspitze
+        %p = polyfit(x,y,1);
+        %t2 = 0:0.1:n_x;
+        %y2 = polyval(p,t2);
+        % Anzeigen von Gerade und Nadelspitze
+        %plot(p_x,polyval(p,p_x),'o',t2,y2, 'LineWidth',2)
+        plot(p_x, p_y, 'Color', 'g','LineWidth',2)
+        
+    end
+    
+    
      
 end

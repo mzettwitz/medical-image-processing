@@ -1,22 +1,35 @@
 close all;
 clear;
+
+% add path to example data
+file = mfilename('fullpath');
+[pathstr,name,ext] = fileparts(file);
+cd(pathstr);
+parent = pwd;
+addpath(genpath(parent));
+
+patient = 'p03'; %p01,p02,p03
 %Pfad des Ordners, in dem die Dicom-Datein liegen
-%dcm_path = ('D:\Studium\16SoSe\MedBV\medbv_data\medbv_data\p01\'); 
-dcm_path = ('data/p01/'); 
-% Ansammlung Dicom-Dateien
+dcm_path = (strcat('../data/',patient)); 
 filenames  = dir(fullfile(dcm_path, '*.dcm')); 
-% wir brauchen erstmal nur die Namen der Dateien
 filenames = {filenames.name}; 
 % m = Anzahl aller Dateien
-m = 25;%numel(filenames);               
+m = numel(filenames);               
 
+% =================== read ground truth
+pat_number = patient(3);
+gt_path = strcat('../data/ground_truth/p', pat_number, '_needle_positions.csv');
+gt_data = csvread(gt_path, 1, 1);
+
+% store images in array
 for k=1:m 
     d = filenames{k}; 
-    f = fullfile(dcm_path , d); 
+    f = fullfile(dcm_path, d); 
     dynamische_variable =  regexprep(d(1:14),'-','_');     
-    bild.(dynamische_variable)=dicomread( f) ;
+    bild.(dynamische_variable)=dicomread( f);
     
 end 
+
 % Variablen fuer die anisotrope Diffusion
 num_iter = 20;
 delta_t = 1/50;
@@ -32,28 +45,52 @@ for k=1:m
     
     % convert into double for window/leveling
     img_d = im2double(img);
-    img_adj = imadjust(img_d, [0.5195 0.53],[]); %[0.5045 0.5155]
-    
-    % morphological opening
-    se = strel('rectangle', [2 4]);
-    img_morph = imclose(img_adj, se);
+    img_adj = imadjust(img_d, [0.49 0.525]); %[0.5045 0.5155]
     
     % anisotropic diffusion filtering
-    %img_filt = anisodiff2D(img_morph ,num_iter,delta_t,kappa,option);
-    img_filt = ordfilt2(img_morph,12,ones(5,5));
+    %img_filt = anisodiff2D(img_adj ,num_iter,delta_t,kappa,option);
+    %img_filt = ordfilt2(img_adj,15,ones(5,5));
+    
+    % morphological closing
+    se = strel('rectangle', [2 4]);
+    %img_morph = imclose(img_filt, se);
+    
     if mod(k,10) == 0
-     %  imtool(img_d); %find nice threshold for window/level every 10th img
+       %imtool(img_d); %find nice threshold for window/level every 10th img
     end
     
     % print to compare
-    figure 
-    subplot(2,2,1), imshow(img,[])
-    subplot(2,2,2), imshow(img_adj)
-    subplot(2,2,3), imhist(img_adj)
-    %subplot(2,2,4), imshow(img_filt)
+    %figure
+    %subplot(2,2,1), imshow(img,[]), title('original')
+    %subplot(2,2,2), imshow(img_adj), title('window/level')
+    %subplot(2,2,3), imshow(img_filt), title('filtered')
+    %subplot(2,2,4), imshow(img_morph), title('morph')
     
+%     if(k < m)
+%         d_pre = filenames{k-1};
+%         d_pre = regexprep(d_pre,'.dcm','');
+%         d_pre = regexprep(d_pre,'-','_');
+%         
+%         subtract = bild.(d) - bild.(d_pre);
+%         subtract = im2double(subtract);
+%         sub_filt = ordfilt2(subtract,15,ones(5,5));
+%         
+%         % sub_filt = im2int16(sub_filt);
+%         
+%         %figure
+%         %imtool(sub_filt)
+%         
+%         %if(subtract - )
+%         
+%     end
     
-    
+   % ground truth plot
+   x = [gt_data(k,1) gt_data(k,3)];
+   y = [gt_data(k,2) gt_data(k,4)];
+   figure, imshow(im2int16(img_adj),[]), title('window/level'), hold on
+   plot(x, y, 'Color', 'r','LineWidth',2)
+   hold off
+   
    % hough transformation
-   Hough(im2int16(img_morph)); 
+   Hough(im2int16(img_adj)); 
 end
