@@ -1,17 +1,27 @@
 close all;
 clear;
 
-%Pfad des Ordners, in dem die Dicom-Datein liegen
-%dcm_path = ('D:\Studium\16SoSe\MedBV\medbv_data\medbv_data\p01\'); 
-%dcm_path = ('../data/p01/'); 
+% add path to example data
+file = mfilename('fullpath');
+[pathstr,name,ext] = fileparts(file);
+cd(pathstr);
+parent = pwd;
+addpath(genpath(parent));
 
-dcm_path = ('~/Dev/MedBV/data/p01/');
-% Ansammlung Dicom-Dateien
+patient = 'p03'; %p01,p02,p03
+%Pfad des Ordners, in dem die Dicom-Datein liegen
+dcm_path = (strcat('../data/',patient)); 
 filenames  = dir(fullfile(dcm_path, '*.dcm')); 
 % wir brauchen erstmal nur die Namen der Dateien
 filenames = {filenames.name}; 
 % m = Anzahl aller Dateien
 m = numel(filenames);               
+%m = 50;
+
+% =================== read ground truth
+pat_number = patient(3);
+gt_path = strcat('../ground_truth/p', pat_number, '_needle_positions.csv');
+gt_data = csvread(gt_path);
 
 for k=1:m 
     d = filenames{k}; 
@@ -55,11 +65,20 @@ for k=1:m
     %subplot(2,2,2), imshow(img_adj), title('window/level')
     %subplot(2,2,3), imshow(img_filt), title('filtered')
     %subplot(2,2,4), imshow(img_morph), title('morph')
-    if(k < m)
-        filname = filenames{k};
-        sub_img = subtraction(d,filname);
-    end
-    figure, imshow (sub_img,[]);
+    %if(k <= m && k > 10)
+   %    filname = filenames{k-1};
+   %    sub_img = subtraction(d,filname,bild);
+   %    titel = num2str(d,filname);
+   %    figure, imshow (sub_img,[]), title (titel);
+   % end
+   
+  % ground truth plot
+   x = [gt_data(k,1) gt_data(k,3)];
+   y = [gt_data(k,2) gt_data(k,4)];
+   figure, imshow(im2int16(img_adj),[]), title('window/level'), hold on
+   plot(x, y, 'Color', 'r','LineWidth',2)
+   hold off
+   
    % hough transformation
    Hough(im2int16(img_adj)); 
 end

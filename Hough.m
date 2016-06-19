@@ -1,4 +1,4 @@
-function y = Hough(img)
+function [n_x, n_y, plot_x, plot_y] = Hough(img)
 
 %====================================== rotation
 %imrotate(img, angle);
@@ -47,7 +47,7 @@ min_y = lines(1).point1(2);
 
 %angezeigt wird das optisch bessere Bild, nicht das f?r die
 %Hough-Transformation genutzte
-figure, imshow(rotI,[]), title('lines in image'), hold on
+%figure, imshow(rotI,[]), title('lines in image'), hold on
 
 for k = 1:length(lines)
     xy = [lines(k).point1; lines(k).point2];
@@ -87,28 +87,30 @@ end
 
     % Finden des hellsten Punktes (Nadelspitze)
     % Auslassen von Artefakten(p01, Rand)
-    if(min_x < max_x)
-        rect_around = img(min_y:max_y,min_x:max_x);
-    else
-        rect_around = img(min_y:max_y,max_x:min_x);
-    end
-    max_bright = max(rect_around(:));
-    if(img(max_x,max_y)< max_bright *0.8)       
-       % [r, c] = find(img == max_bright); 
-        [r, c] = find(rect_around == max_bright); 
+    %if(min_x < max_x)
+     %   rect_around = img(min_y:max_y,min_x:max_x);
+    %else
+     %   rect_around = img(min_y:max_y,max_x:min_x);
+    %end
+    max_bright = max(img(:));
+    if(img(max_x,max_y)< img *0.8)       
+        [r, c] = find(img == max_bright); 
+       % [r, c] = find(rect_around == max_bright); 
         cond_c = c < (size(img,1) * 0.9);
         pos = find(c(cond_c) == max(c(cond_c)), 1, 'last' );
-        n_x = c(pos)+ max_x;
-        n_y = r(pos) + min_y;        
+        n_x = c(pos);
+        n_y = r(pos);        
     else
         n_x = max_x;
         n_y = max_y;
     end
-    plot(n_x, n_y, 'o', 'Color', 'g')
+   % plot(n_x, n_y, 'o', 'Color', 'g')
     %plot(c, r, 'o', 'Color', 'g')  % all points
     
     p_x = [n_x min_x ];
     p_y = [n_y min_y];
+    plot_x = 0;
+    plot_y = 0;
     if(min_y <= n_y)
         %Berechnung der Ausgleichsgerade bis zur Nadelspitze
         %p = polyfit(x,y,1);
@@ -116,7 +118,9 @@ end
         %y2 = polyval(p,t2);
         % Anzeigen von Gerade und Nadelspitze
         %plot(n_x,polyval(p,n_x),'o',t2,y2, 'LineWidth',2)
-        plot(p_x, p_y, 'Color', 'g','LineWidth',2)
+        plot_x = p_x;
+        plot_y = p_y;
+      %  plot(p_x, p_y, 'Color', 'g','LineWidth',2)
         
     end
     
