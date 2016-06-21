@@ -1,4 +1,4 @@
-function [n_x, n_y, plot_x, plot_y] = Hough(img)
+function y = Hough(img)
 
 %====================================== rotation
 %imrotate(img, angle);
@@ -27,9 +27,19 @@ BW = edge(rotI,'sobel','vertical');
 %houghpeaks(houghMatrix, numberOfPeaks,'option',value;
 P = houghpeaks(H,1,'threshold',0.85*max(H(:)));
 
+P1 = houghpeaks(H,1,'threshold',0.85*max(H(:)));
+lines1 = houghlines(BW,theta,rho,P1,'FillGap',2.5,'MinLength',4.5);
+
+P2 = houghpeaks(H,2,'threshold',0.85*max(H(:)));
+lines2 = houghlines(BW,theta,rho,P2,'FillGap',2.5,'MinLength',4.5);
+
+P3 = houghpeaks(H,3,'threshold',0.85*max(H(:)));
+lines3 = houghlines(BW,theta,rho,P3,'FillGap',2.5,'MinLength',4.5);
+
+P4 = houghpeaks(H,4,'threshold',0.85*max(H(:)));
+lines4 = houghlines(BW,theta,rho,P3,'FillGap',2.5,'MinLength',4.5);
 %figure, imshow(H,[]), title('hough space'), hold on;
 %p_x = theta(P(:,2)); p_y = rho(P(:,1)); plot(p_x,p_y,'s','color','red');
-
 
 %====================================== hough lines
 %houghlines(edgeImg,theta,rho,peaks,'option', value);
@@ -41,13 +51,24 @@ x = [];
 y = [];
 max_x = 0;
 max_y = 0;
-min_x = lines(1).point1(1);
-min_y = lines(1).point1(2);
+%min_x = lines(1).point1(1);
+%min_y = lines(1).point1(2);
 
-%angezeigt wird das optisch bessere Bild, nicht das f?r die
+%angezeigt wird das optisch bessere Bild, nicht das fuer die
 %Hough-Transformation genutzte
-%figure, imshow(rotI,[]), title('lines in image'), hold on
-
+figure, imshow(rotI,[]), title('lines in image'), hold on
+for j = 1:length(lines1)
+    %bresenham algorithmus
+end
+for j = length(lines1)+1: length (lines2)
+     %bresenham algorithmus
+end
+for j = length(lines2)+1: length (lines3)
+     %bresenham algorithmus
+end
+for j = length(lines3)+1: length (lines4)
+     %bresenham algorithmus
+end
 for k = 1:length(lines)
     xy = [lines(k).point1; lines(k).point2];
     plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
@@ -85,7 +106,7 @@ end
     
 
     % Finden des hellsten Punktes (Nadelspitze)
-<<<<<<< HEAD
+
     % Auslassen von Artefakten(p01, Rand)
     %if(min_x < max_x)
      %   rect_around = img(min_y:max_y,min_x:max_x);
@@ -105,36 +126,30 @@ end
         n_y = max_y;
     end
    % plot(n_x, n_y, 'o', 'Color', 'g')
-=======
-    % Auslassen von Artefakten(p01, Rand), Gebieten am Rand
+   
+  % Auslassen von Artefakten(p01, Rand), Gebieten am Rand
     max_bright = max(img(:));
     [r, c] = find(img == max_bright); 
     cond_c = c > (size(img,1) * 0.1) & c < (size(img,1) * 0.9);
     pos = find(c(cond_c) == max(c(cond_c)), 1, 'last' );
     n_x = c(pos); n_y = r(pos);
     plot(n_x, n_y, 'o', 'Color', 'g')
->>>>>>> origin/testing
+
     %plot(c, r, 'o', 'Color', 'g')  % all points
     
     p_x = [n_x min_x ];
     p_y = [n_y min_y];
-    plot_x = 0;
-    plot_y = 0;
+    
     if(min_y <= n_y)
         %Berechnung der Ausgleichsgerade bis zur Nadelspitze
         %p = polyfit(x,y,1);
         %t2 = 0:0.1:n_x;
         %y2 = polyval(p,t2);
         % Anzeigen von Gerade und Nadelspitze
-<<<<<<< HEAD
-        %plot(n_x,polyval(p,n_x),'o',t2,y2, 'LineWidth',2)
-        plot_x = p_x;
-        plot_y = p_y;
-      %  plot(p_x, p_y, 'Color', 'g','LineWidth',2)
-=======
+
         %plot(p_x,polyval(p,p_x),'o',t2,y2, 'LineWidth',2)
         plot(p_x, p_y, 'Color', 'g','LineWidth',2)
->>>>>>> origin/testing
+
         
     end
     
