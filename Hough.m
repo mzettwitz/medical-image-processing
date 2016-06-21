@@ -37,7 +37,7 @@ P3 = houghpeaks(H,3,'threshold',0.85*max(H(:)));
 lines3 = houghlines(BW,theta,rho,P3,'FillGap',2.5,'MinLength',4.5);
 
 P4 = houghpeaks(H,4,'threshold',0.85*max(H(:)));
-lines4 = houghlines(BW,theta,rho,P3,'FillGap',2.5,'MinLength',4.5);
+lines4 = houghlines(BW,theta,rho,P4,'FillGap',2.5,'MinLength',4.5);
 %figure, imshow(H,[]), title('hough space'), hold on;
 %p_x = theta(P(:,2)); p_y = rho(P(:,1)); plot(p_x,p_y,'s','color','red');
 
@@ -51,8 +51,36 @@ x = [];
 y = [];
 max_x = 0;
 max_y = 0;
-%min_x = lines(1).point1(1);
-%min_y = lines(1).point1(2);
+min_x = lines(1).point1(1);
+min_y = lines(1).point1(2);
+
+y = length(lines1)
+l1_max_x = lines1(4).point2(1);
+l1_max_y = lines1(length(lines1)).point2(2);
+
+l1_min_x = lines1(1).point1(1);
+l1_min_y = lines1(1).point1(2);
+
+l2_max_x = lines2(length(lines2)).point2(1);
+l2_max_y = lines2(length(lines2)).point2(2);
+
+l2_min_x = lines2(length(lines1)+1).point1(1);
+l2_min_y = lines2(length(lines1)+1).point1(2);
+
+
+l3_max_x = lines3(length(lines3)).point2(1);
+l3_max_y = lines3(length(lines3)).point2(2);
+
+l3_min_x = lines3(length(lines2)+1).point1(1);
+l3_min_y = lines3(length(lines2)+1).point1(2);
+
+
+l4_max_x = lines4(length(lines4)).point2(1);
+l4_max_y = lines4(length(lines4)).point2(2);
+
+l4_min_x = lines4(length(lines3)+1).point1(1);
+l4_min_y = lines4(length(lines3)+1).point1(2);
+
 
 %angezeigt wird das optisch bessere Bild, nicht das fuer die
 %Hough-Transformation genutzte
