@@ -25,7 +25,7 @@ BW = edge(rotI,'sobel','vertical');
 
 %====================================== hough peaks
 %houghpeaks(houghMatrix, numberOfPeaks,'option',value;
-P = houghpeaks(H,5,'threshold',0.85*max(H(:)));
+P = houghpeaks(H,1,'threshold',0.85*max(H(:)));
 
 %figure, imshow(H,[]), title('hough space'), hold on;
 %p_x = theta(P(:,2)); p_y = rho(P(:,1)); plot(p_x,p_y,'s','color','red');
@@ -106,6 +106,14 @@ end
         plot(p_x, p_y, 'Color', 'g','LineWidth',2)
         
     end
+    
+    [all_x, all_y] = bresenham(min_x, min_y, max_x, max_y);
+    sum_hu = 0;
+    for i = 1 : size(all_x)
+     rotI(all_x(i), all_y(i))
+    end
+    %sum_hu
+
     
     
      
