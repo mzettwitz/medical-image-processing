@@ -8,7 +8,7 @@ cd(pathstr);
 parent = pwd;
 addpath(genpath(parent));
 
-patient = 'p03'; %p01,p02,p03
+patient = 'p02'; %p01,p02,p03
 %Pfad des Ordners, in dem die Dicom-Datein liegen
 dcm_path = (strcat('../data/',patient)); 
 filenames  = dir(fullfile(dcm_path, '*.dcm')); 
@@ -92,5 +92,5 @@ for k=1:m
    hold off
    
    % hough transformation
-   Hough(im2int16(img_adj)); 
+   %Hough(im2int16(img_adj)); 
 end

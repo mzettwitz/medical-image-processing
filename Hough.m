@@ -25,7 +25,7 @@ BW = edge(rotI,'sobel','vertical');
 
 %====================================== hough peaks
 %houghpeaks(houghMatrix, numberOfPeaks,'option',value;
-P = houghpeaks(H,1,'threshold',0.85*max(H(:)));
+P = houghpeaks(H,5,'threshold',0.85*max(H(:)));
 
 %figure, imshow(H,[]), title('hough space'), hold on;
 %p_x = theta(P(:,2)); p_y = rho(P(:,1)); plot(p_x,p_y,'s','color','red');
@@ -71,7 +71,7 @@ for k = 1:length(lines)
        max_x = lines(k).point2(1);
     end
     
-    % Suchen des höchsten Punktes (Nadelschaft)
+    % Suchen des h?chsten Punktes (Nadelschaft)
     if(y1 < min_y)
        min_y = y1;
        min_x = lines(k).point1(1);
