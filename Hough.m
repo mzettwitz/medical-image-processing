@@ -54,32 +54,36 @@ max_y = 0;
 min_x = lines(1).point1(1);
 min_y = lines(1).point1(2);
 
-y = length(lines1)
-l1_max_x = lines1(4).point2(1);
+%y = length(lines1)
+l1_max_x = lines1(length(lines1)).point2(1);
 l1_max_y = lines1(length(lines1)).point2(2);
 
 l1_min_x = lines1(1).point1(1);
 l1_min_y = lines1(1).point1(2);
 
-l2_max_x = lines2(length(lines2)).point2(1);
-l2_max_y = lines2(length(lines2)).point2(2);
+if(length(lines2) > length(lines1))
+    l2_max_x = lines2(length(lines2)).point2(1);
+    l2_max_y = lines2(length(lines2)).point2(2);
+    
+    l2_min_x = lines2(length(lines1)+1).point1(1);
+    l2_min_y = lines2(length(lines1)+1).point1(2);
 
-l2_min_x = lines2(length(lines1)+1).point1(1);
-l2_min_y = lines2(length(lines1)+1).point1(2);
+    if(length(lines3) > length(lines2))
+        l3_max_x = lines3(length(lines3)).point2(1);
+        l3_max_y = lines3(length(lines3)).point2(2);
+        
+        l3_min_x = lines3(length(lines2)+1).point1(1);
+        l3_min_y = lines3(length(lines2)+1).point1(2);
 
+        if (length(lines4) > length(lines3))
+            l4_max_x = lines4(length(lines4)).point2(1);
+            l4_max_y = lines4(length(lines4)).point2(2);
 
-l3_max_x = lines3(length(lines3)).point2(1);
-l3_max_y = lines3(length(lines3)).point2(2);
-
-l3_min_x = lines3(length(lines2)+1).point1(1);
-l3_min_y = lines3(length(lines2)+1).point1(2);
-
-
-l4_max_x = lines4(length(lines4)).point2(1);
-l4_max_y = lines4(length(lines4)).point2(2);
-
-l4_min_x = lines4(length(lines3)+1).point1(1);
-l4_min_y = lines4(length(lines3)+1).point1(2);
+            l4_min_x = lines4(length(lines3)+1).point1(1);
+            l4_min_y = lines4(length(lines3)+1).point1(2);            
+        end
+    end
+end
 
 
 %angezeigt wird das optisch bessere Bild, nicht das fuer die
@@ -88,14 +92,20 @@ figure, imshow(rotI,[]), title('lines in image'), hold on
 for j = 1:length(lines1)
     %bresenham algorithmus
 end
-for j = length(lines1)+1: length (lines2)
-     %bresenham algorithmus
-end
-for j = length(lines2)+1: length (lines3)
-     %bresenham algorithmus
-end
-for j = length(lines3)+1: length (lines4)
-     %bresenham algorithmus
+if(length(lines2) > length(lines1))
+    for j = length(lines1)+1: length (lines2)
+         %bresenham algorithmus
+    end
+    if(length(lines3) > length(lines2))
+        for j = length(lines2)+1: length (lines3)
+             %bresenham algorithmus
+        end
+        if(length(lines4) > length(lines3))
+            for j = length(lines3)+1: length (lines4)
+                 %bresenham algorithmus
+            end
+        end        
+    end
 end
 for k = 1:length(lines)
     xy = [lines(k).point1; lines(k).point2];
