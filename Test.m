@@ -8,35 +8,35 @@ cd(pathstr);
 parent = pwd;
 addpath(genpath(parent));
 
-patient = 'p03'; %p01,p02,p03
+patient = 'p02'; %p01,p02,p03
 %Pfad des Ordners, in dem die Dicom-Datein liegen
 dcm_path = (strcat('../data/',patient)); 
 filenames  = dir(fullfile(dcm_path, '*.dcm')); 
+% wir brauchen erstmal nur die Namen der Dateien
 filenames = {filenames.name}; 
 % m = Anzahl aller Dateien
 m = numel(filenames);               
+%m = 50;
 
 % =================== read ground truth
 pat_number = patient(3);
-gt_path = strcat('../data/ground_truth/p', pat_number, '_needle_positions.csv');
-gt_data = csvread(gt_path, 1, 1);
+gt_path = strcat('../ground_truth/p', pat_number, '_needle_positions.csv');
+gt_data = csvread(gt_path,1,1);
 
-% store images in array
-for k=1:m 
+for k=15:m 
     d = filenames{k}; 
     f = fullfile(dcm_path, d); 
     dynamische_variable =  regexprep(d(1:14),'-','_');     
-    bild.(dynamische_variable)=dicomread( f);
+    bild.(dynamische_variable)=dicomread( f) ;
     
 end 
-
 % Variablen fuer die anisotrope Diffusion
 num_iter = 20;
 delta_t = 1/50;
 kappa = 8;
 option = 1;
 
-for k=1:m
+for k=15:m
     d = filenames{k};
     d = regexprep(d,'.dcm','');
     d = regexprep(d,'-','_');  
@@ -65,31 +65,19 @@ for k=1:m
     %subplot(2,2,2), imshow(img_adj), title('window/level')
     %subplot(2,2,3), imshow(img_filt), title('filtered')
     %subplot(2,2,4), imshow(img_morph), title('morph')
-    
-%     if(k < m)
-%         d_pre = filenames{k-1};
-%         d_pre = regexprep(d_pre,'.dcm','');
-%         d_pre = regexprep(d_pre,'-','_');
-%         
-%         subtract = bild.(d) - bild.(d_pre);
-%         subtract = im2double(subtract);
-%         sub_filt = ordfilt2(subtract,15,ones(5,5));
-%         
-%         % sub_filt = im2int16(sub_filt);
-%         
-%         %figure
-%         %imtool(sub_filt)
-%         
-%         %if(subtract - )
-%         
-%     end
-    
-   % ground truth plot
+    %if(k <= m && k > 10)
+   %    filname = filenames{k-1};
+   %    sub_img = subtraction(d,filname,bild);
+   %    titel = num2str(d,filname);
+   %    figure, imshow (sub_img,[]), title (titel);
+   % end
+   
+  % ground truth plot
    x = [gt_data(k,1) gt_data(k,3)];
    y = [gt_data(k,2) gt_data(k,4)];
-   figure, imshow(im2int16(img_adj),[]), title('window/level'), hold on
-   plot(x, y, 'Color', 'r','LineWidth',2)
-   hold off
+ %  figure, imshow(im2int16(img_adj),[]), title('window/level'), hold on
+ %  plot(x, y, 'Color', 'r','LineWidth',2)
+ %  hold off
    
    % hough transformation
    Hough(im2int16(img_adj)); 
