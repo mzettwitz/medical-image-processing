@@ -54,7 +54,7 @@ max_y = 0;
 min_x = lines(1).point1(1);
 min_y = lines(1).point1(2);
 
-y = length(lines1)
+y = length(lines1);
 l1_max_x = lines1(4).point2(1);
 l1_max_y = lines1(length(lines1)).point2(2);
 
