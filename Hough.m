@@ -50,8 +50,10 @@ figure, imshow(rotI,[]), title('lines in image'), hold on
 
 for k = 1:length(lines)
     xy = [lines(k).point1; lines(k).point2];
-    plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
-    plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
+    % ===============plot linesegments
+    %plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
+    %plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
+    % ===============
     %Vektor mit den x bzw. y Koordinaten der Punkte
     x = [x lines(k).point1(1) lines(k).point2(1)];
     y = [y lines(k).point1(2) lines(k).point2(2)];
@@ -103,17 +105,43 @@ end
         %y2 = polyval(p,t2);
         % Anzeigen von Gerade und Nadelspitze
         %plot(p_x,polyval(p,p_x),'o',t2,y2, 'LineWidth',2)
-        plot(p_x, p_y, 'Color', 'g','LineWidth',2)
+        %plot(p_x, p_y, 'Color', 'g','LineWidth',2)
+         plot(min_x, min_y,'x','LineWidth',2,'Color', 'r')
+         plot(max_x, max_y,'x','LineWidth',2,'Color', 'g')
         
     end
     
+    % obtain all points on line using bresenham's algorithm
     [all_x, all_y] = bresenham(min_x, min_y, max_x, max_y);
-    sum_hu = 0;
-    for i = 1 : size(all_x)
-     rotI(all_x(i), all_y(i))
-    end
-    %sum_hu
-
+    
+    % setup storage information
+    sum_hu = int32(0);
+    maxSum_hu = cast(rotI(all_x(1), all_y(1)),'int32');
+    maxPos = 1;
+    delay = 0;
+    
+    % obtain needle tip
+%     for i = 1 : size(all_x)
+%         val = cast(rotI(all_x(i), all_y(i)),'int32');   % get current value
+%         sum_hu = sum_hu + val;                          % update sum
+%         
+%         if(sum_hu > maxSum_hu)
+%             maxSum_hu = sum_hu;
+%             maxPos = i;
+%         end
+%         if(sum_hu < maxSum_hu)
+%             %delay = delay + 1;
+%         end
+%         if(delay > 15)
+%             %break;
+%         end
+%         plot(all_x(maxPos), all_y(maxPos),'x','LineWidth',2,'Color', 'm')
+%     end
+    
+    [pos grad] = maxGrad(all_x, all_y, rotI);
+    plot(all_x(pos), all_y(pos),'x','LineWidth',2,'Color', 'm')
+    
+   % plot(all_x(maxPos), all_y(maxPos),'x','LineWidth',2,'Color', 'm')
     
     
      

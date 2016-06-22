@@ -14,7 +14,7 @@ dcm_path = (strcat('../data/',patient));
 filenames  = dir(fullfile(dcm_path, '*.dcm')); 
 filenames = {filenames.name}; 
 % m = Anzahl aller Dateien
-m = numel(filenames);               
+m = 5;%numel(filenames);               
 
 % =================== read ground truth
 pat_number = patient(3);
@@ -26,7 +26,7 @@ for k=1:m
     d = filenames{k}; 
     f = fullfile(dcm_path, d); 
     dynamische_variable =  regexprep(d(1:14),'-','_');     
-    bild.(dynamische_variable)=dicomread( f);
+    bild.(dynamische_variable)=dicomread(f);
     
 end 
 
@@ -38,7 +38,7 @@ for k=1:m
     img = bild.(d);
     
     % window/leveling
-    img_adj = imadjust(img, [0.49 0.525]); %[0.5045 0.5155]
+    img_adj = imadjust(img,[0.49 0.525]); %[0.5045 0.5155]
    
     
     if mod(k,10) == 0
@@ -48,7 +48,7 @@ for k=1:m
     % print to compare
     %figure
     %subplot(2,2,1), imshow(img,[]), title('original')
-    %subplot(2,2,2), imshow(img_adj), title('window/level')
+    %subplot(2,2,2), imshow(img_adj,[]), title('window/level')
     
     
    % ===================== ground truth plot
