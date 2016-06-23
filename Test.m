@@ -38,7 +38,7 @@ for k=1:m
     img = bild.(d);
     
     % window/leveling
-    img_adj = imadjust(img,[0.49 0.525]); %[0.5045 0.5155]
+    img_adj = imadjust(img,[0.49, 0.525]); %[0.5045 0.5155]
    
     
     if mod(k,10) == 0
@@ -59,5 +59,5 @@ for k=1:m
    %hold off
    
    % ========================== hough transformation
-   Hough((img_adj)); 
+   Hough((img)); 
 end

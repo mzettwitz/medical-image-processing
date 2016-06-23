@@ -44,16 +44,17 @@ max_y = 0;
 min_x = lines(1).point1(1);
 min_y = lines(1).point1(2);
 
-%angezeigt wird das optisch bessere Bild, nicht das f?r die
-%Hough-Transformation genutzte
 figure, imshow(rotI,[]), title('lines in image'), hold on
 
+%==================================== search on lines
 for k = 1:length(lines)
     xy = [lines(k).point1; lines(k).point2];
+    
     % ===============plot linesegments
     %plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
     %plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
     % ===============
+    
     %Vektor mit den x bzw. y Koordinaten der Punkte
     x = [x lines(k).point1(1) lines(k).point2(1)];
     y = [y lines(k).point1(2) lines(k).point2(2)];
@@ -85,9 +86,9 @@ for k = 1:length(lines)
     end
 end
     
-
-    % Finden des hellsten Punktes (Nadelspitze)
-    % Auslassen von Artefakten(p01, Rand), Gebieten am Rand
+%==================================== search on lines
+    % find the most intense point (needle tip)
+    % cut off borders
     max_bright = max(img(:));
     [r, c] = find(img == max_bright); 
     cond_c = c > (size(img,1) * 0.1) & c < (size(img,1) * 0.9);
@@ -96,8 +97,10 @@ end
     plot(n_x, n_y, 'o', 'Color', 'g')
     %plot(c, r, 'o', 'Color', 'g')  % all points
     
-    p_x = [n_x min_x ];
-    p_y = [n_y min_y];
+    %p_x = [n_x min_x];
+    %p_y = [n_y min_y];
+    
+    
     if(min_y <= n_y)
         %Berechnung der Ausgleichsgerade bis zur Nadelspitze
         %p = polyfit(x,y,1);
@@ -106,19 +109,66 @@ end
         % Anzeigen von Gerade und Nadelspitze
         %plot(p_x,polyval(p,p_x),'o',t2,y2, 'LineWidth',2)
         %plot(p_x, p_y, 'Color', 'g','LineWidth',2)
+        
+        %===================== plot top and bottom of line
          plot(min_x, min_y,'x','LineWidth',2,'Color', 'r')
-         plot(max_x, max_y,'x','LineWidth',2,'Color', 'g')
+         plot(max_x, max_y,'x','LineWidth',2,'Color', 'y')
         
     end
     
     % obtain all points on line using bresenham's algorithm
     [all_x, all_y] = bresenham(min_x, min_y, max_x, max_y);
     
+    %=================================================
+    % find needle tip by finding the most intense point on line 
+    %=================================================
     % setup storage information
     sum_hu = int32(0);
     maxSum_hu = cast(rotI(all_x(1), all_y(1)),'int32');
     maxPos = 1;
     delay = 0;
+    offset = 5;
+    
+    % find brightest point in tube(offset) around the line
+    tip_index = 0;
+    maxBright = int32(-999999);
+    
+    tmpMatrix = zeros(11)
+    
+    for i = 1 : size(all_x)
+        localMax = int32(-999999);
+        locaId = 0;
+        localVs = zeros(2*offset+1,1);
+        for j = -offset : offset
+            localVs(j+offset+1) =  rotI(all_x(i)+j,all_y(i));
+            tmpMatrix(j+offset+1) = rotI(all_x(i)+j,all_y(i));
+            
+            plot(all_x(i)+j, all_y(i),'x','LineWidth',2,'Color', 'm')
+            
+            
+            
+            if(rotI(all_x(i)+j,all_y(i)) > localMax)
+                localMax = rotI(all_x(i)+j,all_y(i));
+                
+                localId = j;
+            end
+        end
+        
+        [idx, value] = max(tmpMatrix)
+        
+        localVs
+        localMax
+        
+       % plot(all_x(i), all_y(i)+localId,'x','LineWidth',2,'Color', 'm')
+        if(localMax > maxBright)
+           maxBright = localMax;
+           tip_index = i;
+        end
+    end
+    
+%    p_x = [all_x(tip_index), min_x];
+%    p_y = [all_y(tip_index), min_y];
+    %plot(p_x, p_y, 'Color', 'm','LineWidth',2)
     
     % obtain needle tip
 %     for i = 1 : size(all_x)
@@ -138,8 +188,8 @@ end
 %         plot(all_x(maxPos), all_y(maxPos),'x','LineWidth',2,'Color', 'm')
 %     end
     
-    [pos grad] = maxGrad(all_x, all_y, rotI);
-    plot(all_x(pos), all_y(pos),'x','LineWidth',2,'Color', 'm')
+    [pos grad] = maxGrad(all_x, all_y, rotI);   
+    %plot(all_x(pos), all_y(pos),'x','LineWidth',2,'Color', 'm')
     
    % plot(all_x(maxPos), all_y(maxPos),'x','LineWidth',2,'Color', 'm')
     
