@@ -9,7 +9,7 @@ parent = pwd;
 addpath(genpath(parent));
 
 %=========================
-%choose patient
+% choose patient
 patient = 'p01'; %p01,p02,p03
 %=========================
 
@@ -18,15 +18,8 @@ dcm_path = (strcat('../data/',patient));
 filenames  = dir(fullfile(dcm_path, '*.dcm')); 
 filenames = {filenames.name}; 
 
-% m = Anzahl aller Dateien
+% m = number of files/images
 m = 10;%numel(filenames);               
-
-%===========================
-% read ground truth
-pat_number = patient(3);
-gt_path = strcat('../data/ground_truth/p', pat_number, '_needle_positions.csv');
-gt_data = csvread(gt_path, 1, 1);
-%===========================
 
 % store images in array
 for k=1:m 
@@ -55,15 +48,23 @@ for k=1:m
     %subplot(2,2,2), imshow(img_adj,[]), title('window/level')
     
     
-   % =============================== 
-   %ground truth plot
-   x = [gt_data(k,1) gt_data(k,3)];
-   y = [gt_data(k,2) gt_data(k,4)];
-   %figure, imshow(im2int16(img_adj),[]), title('window/level'), hold on
-   %plot(x, y, 'Color', 'r','LineWidth',2)
-   %hold off
-   %================================
+    % ===============================
+    % ground truth
+    if(false)
+        % read gt files
+        pat_number = patient(3);
+        gt_path = strcat('../data/ground_truth/p', pat_number, '_needle_positions.csv');
+        gt_data = csvread(gt_path, 1, 1);
+        
+        %plot gt 
+        x = [gt_data(k,1) gt_data(k,3)];
+        y = [gt_data(k,2) gt_data(k,4)];
+        figure, imshow(im2int16(img_adj),[]), title('window/level'), hold on
+        plot(x, y, 'Color', 'r','LineWidth',2)
+        hold off
+    end
+    %================================
     
-   % hough transformation + plotting
-   Hough((img_adj)); 
+    % hough transformation + plotting
+    Hough((img_adj)); 
 end
