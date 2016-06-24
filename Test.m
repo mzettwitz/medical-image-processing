@@ -10,7 +10,7 @@ addpath(genpath(parent));
 
 %=========================
 % choose patient
-patient = 'p01'; %p01,p02,p03
+patient = 'p03'; %p01,p02,p03
 %=========================
 
 % data path
@@ -19,7 +19,7 @@ filenames  = dir(fullfile(dcm_path, '*.dcm'));
 filenames = {filenames.name}; 
 
 % m = number of files/images
-m = 10;%numel(filenames);               
+m = numel(filenames);               
 
 % store images in array
 for k=1:m 

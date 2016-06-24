@@ -29,7 +29,7 @@ P = houghpeaks(H,1,'threshold',0.85*max(H(:)));
 
 %============================================ hough lines
 %houghlines(edgeImg,theta,rho,peaks,'option', value);
-lines = houghlines(BW,theta,rho,P,'FillGap',2.5,'MinLength',4.5);
+lines = houghlines(BW,theta,rho,P,'FillGap',3.75,'MinLength',12.5);
 
 
 
@@ -43,7 +43,7 @@ figure, imshow(rotI,[]), title('lines in image'), hold on
 
 %>>>>>>>>>>>>>>>>>>OPTIONS<<<<<<<<<<<<<<<<<<<<<<<<<<<
 option1 = 0;    % plot all line segments            <
-option2 = 0;    % plot min and max point of line    <
+option2 = 1;    % plot min and max point of line    <
 option3 = 0;    % plot brightest point + needle     <
 option4 = 1;    % bresenham + brightest point       <
 option5 = 0;    % bresenham + max gradient          <
@@ -51,10 +51,13 @@ option5 = 0;    % bresenham + max gradient          <
 
 
 % obtain highest and lowest point from one hough line(peak)
-min_x = lines(1).point1(1);
-min_y = lines(1).point1(2);
-max_x = lines(length(lines)).point2(1);
-max_y = lines(length(lines)).point2(2);
+if(~isempty(lines))
+    min_x = lines(1).point1(1);
+    min_y = lines(1).point1(2);
+    max_x = lines(length(lines)).point2(1);
+    max_y = lines(length(lines)).point2(2);
+end
+
 
 %========================== OPTION 1
 % plot all line segments
@@ -69,7 +72,7 @@ end
 
 %========================== OPTION 2
 % plot top and bottom of line
-if(option2 == 1)
+if(option2 == 1 && ~isempty(lines))
     plot(min_x, min_y,'x','LineWidth',2,'Color', 'r')
     plot(max_x, max_y,'x','LineWidth',2,'Color', 'g')
 end
@@ -82,7 +85,7 @@ end
 %========================== OPTION 3
 % find the most intense point (needle tip)
 % constrain borders
-if(option3 == 1)
+if(option3 == 1 && ~isempty(lines))
     max_bright = max(img(:));
     [row, col] = find(img == max_bright); 
     cond_col = col > (size(img,1) * 0.1) & col < (size(img,1) * 0.9);
@@ -109,68 +112,54 @@ end
 %============================ OPTION 4
 % obtain all points on line using bresenham's algorithm
 % find brightest point on line inside a tube (offset) as needle tip
-if(option4 == 1)
+if(option4 == 1 && ~isempty(lines))
     
     % all line points
     [all_x, all_y] = bresenham(min_x, min_y, max_x, max_y);
  
     % setup storage information
-    %sum_hu = uint32(0);         % used later for best candidates
-    %maxSum_hu = uint32(0);      % used later for best candidates
-    off = 5;                    % offset
-    maxBright = uint32(0);
+    %sum_hu = uint32(0);            % used later for best candidates
+    %maxSum_hu = uint32(0);         % used later for best candidates
+    off = 5;                        % offset   
     
-    tmpMatrix = zeros(11);
-    
-    tip_index = 1;
-    localId = 0;        % index (offset) of local maximum
+    localIds = ones(1,length(all_x));         % index (offset) of local maximum
+    localVls = zeros(1,length(all_x));        % value of local maximum
     
     % find brightest point in tube(offset) around the line
     % iterate over each point
-    for i = 1 : size(all_x)
+    for i = 1 : length(all_x)
         
         % hold one row, initialize with smallest value 
-        lineTmp = ones(1,off*2+1)*-Inf
-        
-        % local maximum on offset line
-        localMax = uint32(0);
-        
+        lineTmp = ones(1,off*2+1)*-Inf;
+             
         % iterate over each offset point
         for j = -off : off
             
-            % matrix with all values on offset line
-            tmpMatrix(j+off+1) = rotI(all_x(i)+j, all_y(i));
-           
-            % update local maximum
-            if(rotI(all_x(i)+j, all_y(i)) > localMax)
-                localMax = rotI(all_x(i)+j, all_y(i));
-                localId = j;
-            end
+            lineTmp(j+off+1) =  rotI(all_y(i),all_x(i)+j);
             
-            plot(all_x(i)+j, all_y(i),'x','LineWidth',2,'Color', 'm')
-            lineTmp(j+off+1) =  rotI(all_y(i),all_x(i)+j)
+            % DEBUG: plot all sampled pixels
+            %plot(all_x(i)+j, all_y(i),'x','LineWidth',2,'Color', 'm')
         end
         
-        % DEBUG: plot all sampled pixels
-        maxIdx = find(lineTmp == max(lineTmp)) 
-        all_y(i)
-        plot(all_x(i)-off-1+maxIdx, all_y(i),'x','LineWidth',2,'Color', 'blue')
-        % TODO: here we ended up yesterday <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-        % [row, col]?
-        %[idx, value] = find(tmpMatrix == max(tmpMatrix(:)));
+        % find index + value of max pixel in row and store it
+        maxIdx = find(lineTmp == max(lineTmp));
+        maxIdx = ceil(median(maxIdx));
+        localIds(i) = maxIdx;
+        localVls(i) = lineTmp(maxIdx);
         
         % DEBUG: plot all max values on offset lines
-        %plot(all_x(i), all_y(i)+localId,'x','LineWidth',2,'Color', 'm')
+        %plot(all_x(i)-off-1+maxIdx, all_y(i), 'x','LineWidth',2,'Color', 'blue')
         
-        % find 'global' maximum (needle tip)
-       % if(localMax > maxBright)
-       %    maxBright = localMax;
-       %    tip_index = i;
-        %end
     end
     
-    % plot brightest point
-    %plot(all_x(tip_index)+localId, all_y(tip_index),'o','LineWidth',2,'Color', 'm')
+    % find brightest points of local max
+    maxV = max(localVls);
+    cond = localVls >= maxV*0.6;
+    tip_id = find(cond, 1, 'last');
+    
+        
+    plot(all_x(tip_id)-off-1+localIds(tip_id), all_y(tip_id), 'x','LineWidth',2,'Color', 'blue')
+    
 end
 %===================================
 
