@@ -126,8 +126,11 @@ if(option4 == 1)
     localId = 0;        % index (offset) of local maximum
     
     % find brightest point in tube(offset) around the line
-    % iterate over each point 
+    % iterate over each point
     for i = 1 : size(all_x)
+        
+        % hold one row, initialize with smallest value 
+        lineTmp = ones(1,off*2+1)*-Inf
         
         % local maximum on offset line
         localMax = uint32(0);
@@ -144,26 +147,30 @@ if(option4 == 1)
                 localId = j;
             end
             
-            % DEBUG: plot all sampled pixels
-            %plot(all_x(i)+j, all_y(i),'x','LineWidth',2,'Color', 'm')
+            plot(all_x(i)+j, all_y(i),'x','LineWidth',2,'Color', 'm')
+            lineTmp(j+off+1) =  rotI(all_y(i),all_x(i)+j)
         end
         
+        % DEBUG: plot all sampled pixels
+        maxIdx = find(lineTmp == max(lineTmp)) 
+        all_y(i)
+        plot(all_x(i)-off-1+maxIdx, all_y(i),'x','LineWidth',2,'Color', 'blue')
         % TODO: here we ended up yesterday <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
         % [row, col]?
-        [idx, value] = find(tmpMatrix == max(tmpMatrix(:)));
+        %[idx, value] = find(tmpMatrix == max(tmpMatrix(:)));
         
         % DEBUG: plot all max values on offset lines
         %plot(all_x(i), all_y(i)+localId,'x','LineWidth',2,'Color', 'm')
         
         % find 'global' maximum (needle tip)
-        if(localMax > maxBright)
-           maxBright = localMax;
-           tip_index = i;
-        end
+       % if(localMax > maxBright)
+       %    maxBright = localMax;
+       %    tip_index = i;
+        %end
     end
     
     % plot brightest point
-    plot(all_x(tip_index)+localId, all_y(tip_index),'o','LineWidth',2,'Color', 'm')
+    %plot(all_x(tip_index)+localId, all_y(tip_index),'o','LineWidth',2,'Color', 'm')
 end
 %===================================
 
