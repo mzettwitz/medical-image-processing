@@ -23,7 +23,7 @@ pat_number = patient(3);
 gt_path = strcat('../ground_truth/p', pat_number, '_needle_positions.csv');
 gt_data = csvread(gt_path,1,1);
 
-for k=15:m 
+for k=1:m 
     d = filenames{k}; 
     f = fullfile(dcm_path, d); 
     dynamische_variable =  regexprep(d(1:14),'-','_');     
@@ -36,7 +36,7 @@ delta_t = 1/50;
 kappa = 8;
 option = 1;
 
-for k=15:m
+for k=1:m
     d = filenames{k};
     d = regexprep(d,'.dcm','');
     d = regexprep(d,'-','_');  
