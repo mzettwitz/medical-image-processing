@@ -32,7 +32,6 @@ P = houghpeaks(H,1,'threshold',0.85*max(H(:)));
 lines = houghlines(BW,theta,rho,P,'FillGap',3.75,'MinLength',12.5);
 
 
-
 %============================================= find best line candidate
 
 %>>>>>>>>> TODO: find best candidate for further processing
@@ -46,59 +45,33 @@ lines = houghlines(BW,theta,rho,P,'FillGap',3.75,'MinLength',12.5);
 % TODO: store the best candidate(brightest) for further computation
 % TODO: test you results by plotting the best candidate
 
-%y = length(lines1)
-l1_max_x = lines1(length(lines1)).point2(1);
-l1_max_y = lines1(length(lines1)).point2(2);
-
-l1_min_x = lines1(1).point1(1);
-l1_min_y = lines1(1).point1(2);
-
-if(length(lines2) > length(lines1))
-    l2_max_x = lines2(length(lines2)).point2(1);
-    l2_max_y = lines2(length(lines2)).point2(2);
-    
-    l2_min_x = lines2(length(lines1)+1).point1(1);
-    l2_min_y = lines2(length(lines1)+1).point1(2);
-
-    if(length(lines3) > length(lines2))
-        l3_max_x = lines3(length(lines3)).point2(1);
-        l3_max_y = lines3(length(lines3)).point2(2);
-        
-        l3_min_x = lines3(length(lines2)+1).point1(1);
-        l3_min_y = lines3(length(lines2)+1).point1(2);
-
-        if (length(lines4) > length(lines3))
-            l4_max_x = lines4(length(lines4)).point2(1);
-            l4_max_y = lines4(length(lines4)).point2(2);
-
-            l4_min_x = lines4(length(lines3)+1).point1(1);
-            l4_min_y = lines4(length(lines3)+1).point1(2);            
+sumPixel = 0;
+hpeaks = 4;
+for i = 1: hpeaks
+    P  = houghpeaks(H,i,'threshold',0.85*max(H(:)));
+    line  = houghlines(BW,theta,rho,P,'FillGap',3.75,'MinLength',12.5);
+    cellarray{i} = line;
+    if(~isempty(cellarray{1}))
+        l = length(line);
+        maxPoint_x(1,i) = cellarray{i}(1,l).point2(1);
+        maxPoint_y(1,i) = cellarray{i}(1,l).point2(2);
+        minPoint_x(1,i) = cellarray{i}(1,1).point1(1);
+        minPoint_y(1,i) = cellarray{i}(1,1).point1(2);
+        [all_x,all_y]= bresenham( minPoint_x(1,i), minPoint_y(1,i),maxPoint_x(1,i), maxPoint_y(1,i));
+        if length(all_x) > 300
+            ending = 300;
+        else
+            ending = length(all_y);
         end
-    end
-end
-
-
-for j = 1:length(lines1)
-    %bresenham algorithmus
-end
-if(length(lines2) > length(lines1))
-    for j = length(lines1)+1: length (lines2)
-         %bresenham algorithmus
-    end
-    if(length(lines3) > length(lines2))
-        for j = length(lines2)+1: length (lines3)
-             %bresenham algorithmus
+        for j = 1: ending
+           sumPixel = sumPixel +(img(all_x(j,1), all_y(j,1)));
         end
-        if(length(lines4) > length(lines3))
-            for j = length(lines3)+1: length (lines4)
-                 %bresenham algorithmus
-            end
-        end        
+        allIntensity(1,i) = sumPixel/ending;
     end
 end
-%================================================
-
-
+ if(~isempty(cellarray{1}))
+    [brightestLine, I]= max(allIntensity);
+ end 
 
 %============================================================
 % line processing 
@@ -116,12 +89,18 @@ option5 = 0;    % bresenham + max gradient          <
 
 
 % obtain highest and lowest point from one hough line(peak)
-if(~isempty(lines))
+if(~isempty(cellarray{1}))
+   min_x = minPoint_x(1,I);
+   min_y = minPoint_y(1,I);
+   max_x = maxPoint_x(1,I);
+   max_y = maxPoint_y(1,I);
+else if (~isempty(lines))
     min_x = lines(1).point1(1);
     min_y = lines(1).point1(2);
     max_x = lines(length(lines)).point2(1);
     max_y = lines(length(lines)).point2(2);
-end
+    end
+end 
 
 
 %========================== OPTION 1
