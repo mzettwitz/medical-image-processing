@@ -33,6 +33,71 @@ lines = houghlines(BW,theta,rho,P,'FillGap',3.75,'MinLength',12.5);
 
 
 
+%============================================= find best line candidate
+
+%>>>>>>>>> TODO: find best candidate for further processing
+
+% TODO: use a loop over n line candidates (n = number max number of houghpeaks)
+% TODO: find the start and end coords of each candidate
+% TODO: use the bresenham algorithm to obtain all points on each line candidate
+% TODO: use constrain the line candidates in their length(dynamically with a variable, e.g. 300)
+% -> if length(all_x) > 300: ending = 300, else ending = length(all_y) -> loop from i =1 : ending
+% -> summ up the intensity (pixel value)
+% TODO: store the best candidate(brightest) for further computation
+% TODO: test you results by plotting the best candidate
+
+%y = length(lines1)
+l1_max_x = lines1(length(lines1)).point2(1);
+l1_max_y = lines1(length(lines1)).point2(2);
+
+l1_min_x = lines1(1).point1(1);
+l1_min_y = lines1(1).point1(2);
+
+if(length(lines2) > length(lines1))
+    l2_max_x = lines2(length(lines2)).point2(1);
+    l2_max_y = lines2(length(lines2)).point2(2);
+    
+    l2_min_x = lines2(length(lines1)+1).point1(1);
+    l2_min_y = lines2(length(lines1)+1).point1(2);
+
+    if(length(lines3) > length(lines2))
+        l3_max_x = lines3(length(lines3)).point2(1);
+        l3_max_y = lines3(length(lines3)).point2(2);
+        
+        l3_min_x = lines3(length(lines2)+1).point1(1);
+        l3_min_y = lines3(length(lines2)+1).point1(2);
+
+        if (length(lines4) > length(lines3))
+            l4_max_x = lines4(length(lines4)).point2(1);
+            l4_max_y = lines4(length(lines4)).point2(2);
+
+            l4_min_x = lines4(length(lines3)+1).point1(1);
+            l4_min_y = lines4(length(lines3)+1).point1(2);            
+        end
+    end
+end
+
+
+for j = 1:length(lines1)
+    %bresenham algorithmus
+end
+if(length(lines2) > length(lines1))
+    for j = length(lines1)+1: length (lines2)
+         %bresenham algorithmus
+    end
+    if(length(lines3) > length(lines2))
+        for j = length(lines2)+1: length (lines3)
+             %bresenham algorithmus
+        end
+        if(length(lines4) > length(lines3))
+            for j = length(lines3)+1: length (lines4)
+                 %bresenham algorithmus
+            end
+        end        
+    end
+end
+%================================================
+
 
 
 %============================================================
