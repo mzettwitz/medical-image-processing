@@ -1,12 +1,13 @@
 function y = Hough(img)
 
-%====================================== rotation
+%============================================ rotation
 %imrotate(img, angle);
 rotI = imrotate(img,0);
+
 %figure, imshow(rotI), title('rotated image');
 
 
-%====================================== edge operator
+%============================================ edge operator
 %edge(image,'operator','options') 
 %operator = [sobel, prewitt, roberts, log, zerocross, canny] 
 BW = edge(rotI,'sobel','vertical');
@@ -14,45 +15,36 @@ BW = edge(rotI,'sobel','vertical');
 %figure, imshow(BW), title('edges');
 
 
-%====================================== hough space
-%[K,T,R] = hough(BW,'Theta', -85:0.05:85);
-%K = imresize(K,[400 800]);
-%figure, imshow(K,[]), title('scaled hough space');
-
+%============================================ hough space
 %hough(edgeImage,'option', value(s))
 [H,theta,rho] = hough(BW,'Theta', -40:0.05:40);
 
-
-%====================================== hough peaks
+%============================================ hough peaks
 %houghpeaks(houghMatrix, numberOfPeaks,'option',value;
 P = houghpeaks(H,1,'threshold',0.85*max(H(:)));
 
-P1 = houghpeaks(H,1,'threshold',0.85*max(H(:)));
-lines1 = houghlines(BW,theta,rho,P1,'FillGap',2.5,'MinLength',4.5);
-
-P2 = houghpeaks(H,2,'threshold',0.85*max(H(:)));
-lines2 = houghlines(BW,theta,rho,P2,'FillGap',2.5,'MinLength',4.5);
-
-P3 = houghpeaks(H,3,'threshold',0.85*max(H(:)));
-lines3 = houghlines(BW,theta,rho,P3,'FillGap',2.5,'MinLength',4.5);
-
-P4 = houghpeaks(H,4,'threshold',0.85*max(H(:)));
-lines4 = houghlines(BW,theta,rho,P4,'FillGap',2.5,'MinLength',4.5);
 %figure, imshow(H,[]), title('hough space'), hold on;
 %p_x = theta(P(:,2)); p_y = rho(P(:,1)); plot(p_x,p_y,'s','color','red');
 
-%====================================== hough lines
+
+%============================================ hough lines
 %houghlines(edgeImg,theta,rho,peaks,'option', value);
-lines = houghlines(BW,theta,rho,P,'FillGap',2.5,'MinLength',4.5);
+lines = houghlines(BW,theta,rho,P,'FillGap',3.75,'MinLength',12.5);
 
 
-%====================================== print lines
-x = [];
-y = [];
-max_x = 0;
-max_y = 0;
-min_x = lines(1).point1(1);
-min_y = lines(1).point1(2);
+
+%============================================= find best line candidate
+
+%>>>>>>>>> TODO: find best candidate for further processing
+
+% TODO: use a loop over n line candidates (n = number max number of houghpeaks)
+% TODO: find the start and end coords of each candidate
+% TODO: use the bresenham algorithm to obtain all points on each line candidate
+% TODO: use constrain the line candidates in their length(dynamically with a variable, e.g. 300)
+% -> if length(all_x) > 300: ending = 300, else ending = length(all_y) -> loop from i =1 : ending
+% -> summ up the intensity (pixel value)
+% TODO: store the best candidate(brightest) for further computation
+% TODO: test you results by plotting the best candidate
 
 %y = length(lines1)
 l1_max_x = lines1(length(lines1)).point2(1);
@@ -86,9 +78,6 @@ if(length(lines2) > length(lines1))
 end
 
 
-%angezeigt wird das optisch bessere Bild, nicht das fuer die
-%Hough-Transformation genutzte
-figure, imshow(rotI,[]), title('lines in image'), hold on
 for j = 1:length(lines1)
     %bresenham algorithmus
 end
@@ -107,90 +96,170 @@ if(length(lines2) > length(lines1))
         end        
     end
 end
-for k = 1:length(lines)
-    xy = [lines(k).point1; lines(k).point2];
-    plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
-    plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
-    %Vektor mit den x bzw. y Koordinaten der Punkte
-    x = [x lines(k).point1(1) lines(k).point2(1)];
-    y = [y lines(k).point1(2) lines(k).point2(2)];
+%================================================
 
-    % y-Koordinaten der beiden gerade betrachteten Punkte
-    y1 =  lines(k).point1(2);
-    y2 =  lines(k).point2(2);
-    
-    %Suchen des tiefsten Punktes (Nadelspitze)
-    if ( y1 > max_y)
-       max_y = y1;
-       max_x = lines(k).point1(1);
-    end
 
-    if ( y2 > max_y)
-       max_y = y2;
-       max_x = lines(k).point2(1);
-    end
-    
-    % Suchen des höchsten Punktes (Nadelschaft)
-    if(y1 < min_y)
-       min_y = y1;
-       min_x = lines(k).point1(1);
-    end
-    
-    if(y2 < min_y)
-       min_y = y2;
-       min_x = lines(k).point2(1);
+
+%============================================================
+% line processing 
+%===========================================================
+figure, imshow(rotI,[]), title('lines in image'), hold on
+
+
+%>>>>>>>>>>>>>>>>>>OPTIONS<<<<<<<<<<<<<<<<<<<<<<<<<<<
+option1 = 0;    % plot all line segments            <
+option2 = 1;    % plot min and max point of line    <
+option3 = 0;    % plot brightest point + needle     <
+option4 = 1;    % bresenham + brightest point       <
+option5 = 0;    % bresenham + max gradient          <
+%>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+% obtain highest and lowest point from one hough line(peak)
+if(~isempty(lines))
+    min_x = lines(1).point1(1);
+    min_y = lines(1).point1(2);
+    max_x = lines(length(lines)).point2(1);
+    max_y = lines(length(lines)).point2(2);
+end
+
+
+%========================== OPTION 1
+% plot all line segments
+if(option1 == 1)
+    for k = 1 : length(lines)
+        xy = [lines(k).point1; lines(k).point2];
+        plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
+        plot(xy(2,1),xy(2,2),'x','LineWidth',2,'Color','red');
     end
 end
-    
+%==========================
 
-    % Finden des hellsten Punktes (Nadelspitze)
+%========================== OPTION 2
+% plot top and bottom of line
+if(option2 == 1 && ~isempty(lines))
+    plot(min_x, min_y,'x','LineWidth',2,'Color', 'r')
+    plot(max_x, max_y,'x','LineWidth',2,'Color', 'g')
+end
+%===========================
 
-    % Auslassen von Artefakten(p01, Rand)
-    %if(min_x < max_x)
-     %   rect_around = img(min_y:max_y,min_x:max_x);
-    %else
-     %   rect_around = img(min_y:max_y,max_x:min_x);
-    %end
+%===============================================
+% search on line(s)
+%===============================================
+
+%========================== OPTION 3
+% find the most intense point (needle tip)
+% constrain borders
+if(option3 == 1 && ~isempty(lines))
     max_bright = max(img(:));
-    if(img(max_x,max_y)< img *0.8)       
-        [r, c] = find(img == max_bright); 
-       % [r, c] = find(rect_around == max_bright); 
-        cond_c = c < (size(img,1) * 0.9);
-        pos = find(c(cond_c) == max(c(cond_c)), 1, 'last' );
-        n_x = c(pos);
-        n_y = r(pos);        
-    else
-        n_x = max_x;
-        n_y = max_y;
+    [row, col] = find(img == max_bright); 
+    cond_col = col > (size(img,1) * 0.1) & col < (size(img,1) * 0.9);
+    pos = find(col(cond_col) == max(col(cond_col)), 1, 'last');
+    bright_x = col(pos); 
+    bright_y = row(pos);
+    
+    % brightest point in whole image (needle tip) = green ring
+    plot(bright_x, bright_y, 'o', 'Color', 'g', 'LineWidth',2)
+    
+    % DEBUG: plot all brightest points (due to quantization)
+    %plot(col, row, 'o', 'Color', 'g')  
+    
+    p_x = [bright_x min_x];
+    p_y = [bright_y min_y];
+    
+    % plot segmented needle from tip (brightest point) to top
+    if(min_y <= bright_y)
+        plot(p_x, p_y, 'Color', 'g','LineWidth',2)        
     end
-   % plot(n_x, n_y, 'o', 'Color', 'g')
-   
-  % Auslassen von Artefakten(p01, Rand), Gebieten am Rand
-    max_bright = max(img(:));
-    [r, c] = find(img == max_bright); 
-    cond_c = c > (size(img,1) * 0.1) & c < (size(img,1) * 0.9);
-    pos = find(c(cond_c) == max(c(cond_c)), 1, 'last' );
-    n_x = c(pos); n_y = r(pos);
-    plot(n_x, n_y, 'o', 'Color', 'g')
-
-    %plot(c, r, 'o', 'Color', 'g')  % all points
+end 
+%============================  
     
-    p_x = [n_x min_x ];
-    p_y = [n_y min_y];
+%============================ OPTION 4
+% obtain all points on line using bresenham's algorithm
+% find brightest point on line inside a tube (offset) as needle tip
+if(option4 == 1 && ~isempty(lines))
     
-    if(min_y <= n_y)
-        %Berechnung der Ausgleichsgerade bis zur Nadelspitze
-        %p = polyfit(x,y,1);
-        %t2 = 0:0.1:n_x;
-        %y2 = polyval(p,t2);
-        % Anzeigen von Gerade und Nadelspitze
-
-        %plot(p_x,polyval(p,p_x),'o',t2,y2, 'LineWidth',2)
-        plot(p_x, p_y, 'Color', 'g','LineWidth',2)
-
+    % all line points
+    [all_x, all_y] = bresenham(min_x, min_y, max_x, max_y);
+ 
+    % setup storage information
+    %sum_hu = uint32(0);            % used later for best candidates
+    %maxSum_hu = uint32(0);         % used later for best candidates
+    off = 5;                        % offset   
+    
+    localIds = ones(1,length(all_x));         % index (offset) of local maximum
+    localVls = zeros(1,length(all_x));        % value of local maximum
+    
+    % find brightest point in tube(offset) around the line
+    % iterate over each point
+    for i = 1 : length(all_x)
+        
+        % hold one row, initialize with smallest value 
+        lineTmp = ones(1,off*2+1)*-Inf;
+             
+        % iterate over each offset point
+        for j = -off : off
+            
+            lineTmp(j+off+1) =  rotI(all_y(i),all_x(i)+j);
+            
+            % DEBUG: plot all sampled pixels
+            %plot(all_x(i)+j, all_y(i),'x','LineWidth',2,'Color', 'm')
+        end
+        
+        % find index + value of max pixel in row and store it
+        maxIdx = find(lineTmp == max(lineTmp));
+        maxIdx = ceil(median(maxIdx));
+        localIds(i) = maxIdx;
+        localVls(i) = lineTmp(maxIdx);
+        
+        % DEBUG: plot all max values on offset lines
+        %plot(all_x(i)-off-1+maxIdx, all_y(i), 'x','LineWidth',2,'Color', 'blue')
         
     end
     
+    % find brightest points of local max
+    maxV = max(localVls);
+    cond = localVls >= maxV*0.6;
+    tip_id = find(cond, 1, 'last');
+    
+        
+    plot(all_x(tip_id)-off-1+localIds(tip_id), all_y(tip_id), 'x','LineWidth',2,'Color', 'blue')
+    
+end
+%===================================
+
+%=================================== OPTION 5
+% find largest gradient on line
+% TODO: find multiple candidates -> use deepest
+% TODO: refactor
+if(option5 ==1)
+    %p_x = [all_x(tip_index), min_x];
+    %p_y = [all_y(tip_index), min_y];
+    %plot(p_x, p_y, 'Color', 'm','LineWidth',2)
+    
+    % obtain needle tip
+%     for i = 1 : size(all_x)
+%         val = cast(rotI(all_x(i), all_y(i)),'int32');   % get current value
+%         sum_hu = sum_hu + val;                          % update sum
+%         
+%         if(sum_hu > maxSum_hu)
+%             maxSum_hu = sum_hu;
+%             maxPos = i;
+%         end
+%         if(sum_hu < maxSum_hu)
+%             %delay = delay + 1;
+%         end
+%         if(delay > 15)
+%             %break;
+%         end
+%         plot(all_x(maxPos), all_y(maxPos),'x','LineWidth',2,'Color', 'm')
+%     end
+    
+    %[pos grad] = maxGrad(all_x, all_y, rotI);   
+    %plot(all_x(pos), all_y(pos),'x','LineWidth',2,'Color', 'm')
+    
+    %plot(all_x(maxPos), all_y(maxPos),'x','LineWidth',2,'Color', 'm')
+end
     
      
 end
