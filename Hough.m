@@ -1,4 +1,4 @@
-function y = Hough(img)
+function Hough(img)
 
 %============================================ rotation
 %imrotate(img, angle);
