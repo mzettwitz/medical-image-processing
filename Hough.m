@@ -29,7 +29,7 @@ BW = edge(rotI,'sobel','vertical');
 figure, imshow(rotI,[]), title('lines in image'), hold on
 
 % choose #peaks and max needle length
-numberPeaks = 3;
+numberPeaks = 1;
 needleLength = 250;
 
 % setup storage information
@@ -175,14 +175,13 @@ end
 % find brightest point on line inside a tube (offset) as needle tip
 if(option4 == 1 && ~isempty(lines))
     
+    % offset 
+    off = 6;                          
+    
     % all line points
     [all_x, all_y] = bresenham(min_x, min_y, max_x, max_y);
  
-    % setup storage information
-    %sum_hu = uint32(0);            % used later for best candidates
-    %maxSum_hu = uint32(0);         % used later for best candidates
-    off = 5;                        % offset   
-    
+    % setup storage information    
     localIds = ones(1,length(all_x));         % index (offset) of local maximum
     localVls = zeros(1,length(all_x));        % value of local maximum
     
@@ -223,7 +222,7 @@ if(option4 == 1 && ~isempty(lines))
     
     % plot segmented needle from tip (brightest point) to top
     % condition: tip has a high intensity
-    if(min_y <= all_y(tip_id) && maxV >= max(rotI(:))*0.8)
+    if(min_y <= all_y(tip_id) && maxV >= max(rotI(:))*0.5)
         plot(p_x, p_y, 'Color', 'g','LineWidth',2)
         plot(all_x(tip_id)-off-1+localIds(tip_id), all_y(tip_id), 'o','LineWidth',2,'Color', 'g')
     length(all_y)
