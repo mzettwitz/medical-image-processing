@@ -19,87 +19,104 @@ BW = edge(rotI,'sobel','vertical');
 %hough(edgeImage,'option', value(s))
 [H,theta,rho] = hough(BW,'Theta', -40:0.05:40);
 
-%============================================ hough peaks
-%houghpeaks(houghMatrix, numberOfPeaks,'option',value;
-P = houghpeaks(H,1,'threshold',0.85*max(H(:)));
 
-%figure, imshow(H,[]), title('hough space'), hold on;
-%p_x = theta(P(:,2)); p_y = rho(P(:,1)); plot(p_x,p_y,'s','color','red');
+%========================================================
+% find best line candidate
+%========================================================
+% set a number of n Houghpeaks, find the best candidate of n Houghlines
+% constrain the lines with a max length since the needle is limited
+% sum up the intensities of each candidate and choose the brightest one
+figure, imshow(rotI,[]), title('lines in image'), hold on
 
+% choose #peaks and max needle length
+numberPeaks = 3;
+needleLength = 250;
 
-%============================================ hough lines
-%houghlines(edgeImg,theta,rho,peaks,'option', value);
-lines = houghlines(BW,theta,rho,P,'FillGap',3.75,'MinLength',12.5);
+% setup storage information
+cellarray = cell(1,numberPeaks);
+maxPoint_x = zeros(1,numberPeaks);
+maxPoint_y = zeros(1,numberPeaks);
+minPoint_x = zeros(1,numberPeaks);
+minPoint_y = zeros(1,numberPeaks);
+lastIdx = 1;
+sumIntens = zeros(1,numberPeaks);
+bestCandidate = 0;
 
-
-%============================================= find best line candidate
-
-%>>>>>>>>> TODO: find best candidate for further processing
-
-% TODO: use a loop over n line candidates (n = number max number of houghpeaks)
-% TODO: find the start and end coords of each candidate
-% TODO: use the bresenham algorithm to obtain all points on each line candidate
-% TODO: use constrain the line candidates in their length(dynamically with a variable, e.g. 300)
-% -> if length(all_x) > 300: ending = 300, else ending = length(all_y) -> loop from i =1 : ending
-% -> summ up the intensity (pixel value)
-% TODO: store the best candidate(brightest) for further computation
-% TODO: test you results by plotting the best candidate
-
-sumPixel = 0;
-hpeaks = 4;
-for i = 1: hpeaks
+for i = 1 : numberPeaks
+    
+    %========= hough peaks
+    %houghpeaks(houghMatrix, numberOfPeaks,'option',value;
     P  = houghpeaks(H,i,'threshold',0.85*max(H(:)));
-    line  = houghlines(BW,theta,rho,P,'FillGap',3.75,'MinLength',12.5);
-    cellarray{i} = line;
-    if(~isempty(cellarray{1}))
-        l = length(line);
-        maxPoint_x(1,i) = cellarray{i}(1,l).point2(1);
-        maxPoint_y(1,i) = cellarray{i}(1,l).point2(2);
-        minPoint_x(1,i) = cellarray{i}(1,1).point1(1);
-        minPoint_y(1,i) = cellarray{i}(1,1).point1(2);
-        [all_x,all_y]= bresenham( minPoint_x(1,i), minPoint_y(1,i),maxPoint_x(1,i), maxPoint_y(1,i));
-        if length(all_x) > 300
-            ending = 300;
-        else
-            ending = length(all_y);
-        end
-        for j = 1: ending
-           sumPixel = sumPixel +(img(all_x(j,1), all_y(j,1)));
-        end
-        allIntensity(1,i) = sumPixel/ending;
+
+    %figure, imshow(H,[]), title('hough space'), hold on;
+    %p_x = theta(P(:,2)); p_y = rho(P(:,1)); plot(p_x,p_y,'s','color','red');
+
+
+    %========= hough lines
+    %houghlines(edgeImg,theta,rho,peaks,'option', value);
+    lines  = houghlines(BW,theta,rho,P,'FillGap',3.75,'MinLength',12.5);
+    
+    cellarray{i} = lines;
+    
+    if(~isempty(cellarray) && length(lines) >= lastIdx)        
+         % obtain bottom and top points
+         maxPoint_x(i) = cellarray{i}(length(lines)).point2(1);
+         maxPoint_y(i) = cellarray{i}(length(lines)).point2(2);
+         minPoint_x(i) = cellarray{i}(lastIdx).point1(1);
+         minPoint_y(i) = cellarray{i}(lastIdx).point1(2);
+        
+         % update last element
+         lastIdx = length(lines)+1;
+        
+        
+         % obtain line elements from bresenham
+         [all_x, all_y]= bresenham(minPoint_x(i), minPoint_y(i), maxPoint_x(i), maxPoint_y(i));
+        
+         %DEBUG==========
+         %for k = 1: length(all_x)
+         %    plot(all_x(k), all_y(k),'x','LineWidth',2,'Color', 'm') 
+         %end
+         %===============
+    
+         % constrain the needle length
+         ending = length(all_y);        
+         if length(all_x) > needleLength
+            ending = needleLength;
+         end
+        
+         % sum the intensities on the line candidate
+         for j = 1 : ending
+            sumIntens(i) = sumIntens(i) + cast((img(all_x(j), all_y(j))),'uint32');
+         end
+
     end
 end
- if(~isempty(cellarray{1}))
-    [brightestLine, I]= max(allIntensity);
- end 
+
+% choose and store the best candidate
+if(~isempty(cellarray))
+    [maxIntens, bestCandidate] = max(sumIntens);    
+end 
 
 %============================================================
 % line processing 
 %===========================================================
-figure, imshow(rotI,[]), title('lines in image'), hold on
+
 
 
 %>>>>>>>>>>>>>>>>>>OPTIONS<<<<<<<<<<<<<<<<<<<<<<<<<<<
-option1 = 0;    % plot all line segments            <
-option2 = 1;    % plot min and max point of line    <
+option1 = 1;    % plot all line segments            <
+option2 = 0;    % plot min and max point of line    <
 option3 = 0;    % plot brightest point + needle     <
 option4 = 1;    % bresenham + brightest point       <
-option5 = 0;    % bresenham + max gradient          <
 %>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 % obtain highest and lowest point from one hough line(peak)
-if(~isempty(cellarray{1}))
-   min_x = minPoint_x(1,I);
-   min_y = minPoint_y(1,I);
-   max_x = maxPoint_x(1,I);
-   max_y = maxPoint_y(1,I);
-else if (~isempty(lines))
-    min_x = lines(1).point1(1);
-    min_y = lines(1).point1(2);
-    max_x = lines(length(lines)).point2(1);
-    max_y = lines(length(lines)).point2(2);
-    end
+if(~isempty(cellarray))
+   min_x = minPoint_x(bestCandidate);
+   min_y = minPoint_y(bestCandidate);
+   max_x = maxPoint_x(bestCandidate);
+   max_y = maxPoint_y(bestCandidate);
 end 
 
 
@@ -201,44 +218,19 @@ if(option4 == 1 && ~isempty(lines))
     cond = localVls >= maxV*0.6;
     tip_id = find(cond, 1, 'last');
     
-        
-    plot(all_x(tip_id)-off-1+localIds(tip_id), all_y(tip_id), 'x','LineWidth',2,'Color', 'blue')
+    p_x = [all_x(tip_id)-off-1+localIds(tip_id) min_x];
+    p_y = [all_y(tip_id) min_y];
+    
+    % plot segmented needle from tip (brightest point) to top
+    % condition: tip has a high intensity
+    if(min_y <= all_y(tip_id) && maxV >= max(rotI(:))*0.8)
+        plot(p_x, p_y, 'Color', 'g','LineWidth',2)
+        plot(all_x(tip_id)-off-1+localIds(tip_id), all_y(tip_id), 'o','LineWidth',2,'Color', 'g')
+    length(all_y)
+    end
     
 end
 %===================================
-
-%=================================== OPTION 5
-% find largest gradient on line
-% TODO: find multiple candidates -> use deepest
-% TODO: refactor
-if(option5 ==1)
-    %p_x = [all_x(tip_index), min_x];
-    %p_y = [all_y(tip_index), min_y];
-    %plot(p_x, p_y, 'Color', 'm','LineWidth',2)
-    
-    % obtain needle tip
-%     for i = 1 : size(all_x)
-%         val = cast(rotI(all_x(i), all_y(i)),'int32');   % get current value
-%         sum_hu = sum_hu + val;                          % update sum
-%         
-%         if(sum_hu > maxSum_hu)
-%             maxSum_hu = sum_hu;
-%             maxPos = i;
-%         end
-%         if(sum_hu < maxSum_hu)
-%             %delay = delay + 1;
-%         end
-%         if(delay > 15)
-%             %break;
-%         end
-%         plot(all_x(maxPos), all_y(maxPos),'x','LineWidth',2,'Color', 'm')
-%     end
-    
-    %[pos grad] = maxGrad(all_x, all_y, rotI);   
-    %plot(all_x(pos), all_y(pos),'x','LineWidth',2,'Color', 'm')
-    
-    %plot(all_x(maxPos), all_y(maxPos),'x','LineWidth',2,'Color', 'm')
-end
     
      
 end
