@@ -10,7 +10,7 @@ addpath(genpath(parent));
 
 %=========================
 % choose patient
-patient = 'p03'; %p01,p02,p03
+patient = 'p01'; %p01,p02,p03
 %=========================
 
 % data path
@@ -29,7 +29,7 @@ for k=1:m
     images.(dyn_var)=dicomread(file);    
 end 
 
-for k=1:m
+for k=17:m
     %===========================================
     % preprocessing
     d = filenames{k};
