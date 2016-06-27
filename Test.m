@@ -42,12 +42,13 @@ for k=1:m
     img_adj = imadjust(img,[0.49, 0.545]);
     img_adj = im2uint16(img_adj);
     
-     % hough transformation + processing 
-    [p_x, p_y] = Hough((img_adj));
+    % hough transformation + processing 
+    [p_x, p_y] = Hough(img_adj,3);
     
     
-    % print to compare
+    
     %=====================
+    % print to compare
     if(false)
         figure
         subplot(2,2,1), imshow(img,[]), title('original')
@@ -55,9 +56,10 @@ for k=1:m
         subplot(2,2,3), imshow(img_adj,[]), title('needle'), hold on
         plot(p_x, p_y, 'Color', 'g','LineWidth',2), hold off
     end
-    
-    
+    %====================
+        
 
+    figure, imshow(im2int16(img_adj),[]), title('window/level'), hold on
     
     % ===============================
     % ground truth
@@ -70,11 +72,10 @@ for k=1:m
         %plot gt 
         x = [gt_data(k,1) gt_data(k,3)];
         y = [gt_data(k,2) gt_data(k,4)];
-        figure, imshow(im2int16(img_adj),[]), title('window/level'), hold on
-        plot(x, y, 'Color', 'r','LineWidth',2)
-        hold off
+        plot(x, y, 'Color', 'r','LineWidth',2)  
     end
     %================================ 
     
     plot(p_x, p_y, 'Color', 'g','LineWidth',2)
+    hold off
 end

@@ -1,4 +1,4 @@
-function [p_x, p_y] = Hough(img)
+function [p_x, p_y] = Hough(img, numberPeaks)
 
 p_x = [0, 0];
 p_y = [0, 0];
@@ -38,7 +38,6 @@ if (plotInternal == 1)
 end
 
 % choose #peaks and max needle length
-numberPeaks = 1;
 needleLength = 250;
 
 % setup storage information
