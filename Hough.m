@@ -1,4 +1,40 @@
-function Hough(img)
+function [p_x, p_y] = Hough(img, numberPeaks)
+
+%=========================================================================
+% Abstract:
+% This function is build to seperate a medical needle out of medical
+% CT-data. For this purpose we use the Hough transformation to find lines in
+% an image. Further we compute several(numberPeaks) Houghpeaks and choose
+% the best candidate of it (highest intensity). There are two options to
+% choose for the segmentation:
+% 1. top of line + brightest point in whole image as tip
+% 2. (recommended)top of line + brightest point on the line + offset as tip
+% There are several options for debugging:
+% 1. plotInternal: plot extra figure to enable debugging of other options
+% 2. option1: plot all line segments of the best houghline candidate
+% 3. optino2: plot min and max point of the best houghline candidate
+% 4. option3: segmentation method1 (global brightest point)
+% 5. option4 = segmentation method2 (local brightest point)
+
+
+% INPUT:
+% img = input image (grey scale)
+% numberPeaks = the maximal number of Houghpeaks to find in this image.
+%               This variable will change the primary needle we find in the
+%               image (more line candidates to for the needle)
+%
+
+% OUTPUT:
+% p_x = min and max x value of the needle
+% p_y = min and max y value of the needle
+%=========================================================================
+
+
+p_x = [0, 0];
+p_y = [0, 0];
+
+% 0/1 to plot internal in extra window
+plotInternal = 0;
 
 %============================================ rotation
 %imrotate(img, angle);
@@ -26,10 +62,12 @@ BW = edge(rotI,'sobel','vertical');
 % set a number of n Houghpeaks, find the best candidate of n Houghlines
 % constrain the lines with a max length since the needle is limited
 % sum up the intensities of each candidate and choose the brightest one
-figure, imshow(rotI,[]), title('lines in image'), hold on
+
+if (plotInternal == 1)
+    figure, imshow(rotI,[]), title('lines in image'), hold on
+end
 
 % choose #peaks and max needle length
-numberPeaks = 1;
 needleLength = 250;
 
 % setup storage information
@@ -103,8 +141,8 @@ end
 
 
 
-%>>>>>>>>>>>>>>>>>>OPTIONS<<<<<<<<<<<<<<<<<<<<<<<<<<<
-option1 = 1;    % plot all line segments            <
+%>>>>>>>>>>>>>>>>>>OPTIONS (0/1) <<<<<<<<<<<<<<<<<<<<
+option1 = 0;    % plot all line segments            <
 option2 = 0;    % plot min and max point of line    <
 option3 = 0;    % plot brightest point + needle     <
 option4 = 1;    % bresenham + brightest point       <
@@ -122,7 +160,7 @@ end
 
 %========================== OPTION 1
 % plot all line segments
-if(option1 == 1)
+if(option1 == 1 && ~isEmpty(lines) && plotInternal == 1)
     for k = 1 : length(lines)
         xy = [lines(k).point1; lines(k).point2];
         plot(xy(1,1),xy(1,2),'x','LineWidth',2,'Color','yellow');
@@ -133,7 +171,7 @@ end
 
 %========================== OPTION 2
 % plot top and bottom of line
-if(option2 == 1 && ~isempty(lines))
+if(option2 == 1 && ~isempty(lines) && plotInternal == 1)
     plot(min_x, min_y,'x','LineWidth',2,'Color', 'r')
     plot(max_x, max_y,'x','LineWidth',2,'Color', 'g')
 end
@@ -160,12 +198,14 @@ if(option3 == 1 && ~isempty(lines))
     % DEBUG: plot all brightest points (due to quantization)
     %plot(col, row, 'o', 'Color', 'g')  
     
-    p_x = [bright_x min_x];
-    p_y = [bright_y min_y];
-    
     % plot segmented needle from tip (brightest point) to top
     if(min_y <= bright_y)
-        plot(p_x, p_y, 'Color', 'g','LineWidth',2)        
+        p_x = [bright_x min_x];
+        p_y = [bright_y min_y];
+        
+        if(plotInternal ==1)
+        %plot(p_x, p_y, 'Color', 'g','LineWidth',2)
+        end                
     end
 end 
 %============================  
@@ -217,19 +257,19 @@ if(option4 == 1 && ~isempty(lines))
     cond = localVls >= maxV*0.6;
     tip_id = find(cond, 1, 'last');
     
-    p_x = [all_x(tip_id)-off-1+localIds(tip_id) min_x];
-    p_y = [all_y(tip_id) min_y];
     
     % plot segmented needle from tip (brightest point) to top
     % condition: tip has a high intensity
     if(min_y <= all_y(tip_id) && maxV >= max(rotI(:))*0.5)
-        plot(p_x, p_y, 'Color', 'g','LineWidth',2)
-        plot(all_x(tip_id)-off-1+localIds(tip_id), all_y(tip_id), 'o','LineWidth',2,'Color', 'g')
-    length(all_y)
-    end
-    
+        
+        p_x = [all_x(tip_id)-off-1+localIds(tip_id) min_x];
+        p_y = [all_y(tip_id) min_y];
+        
+        if(plotInternal == 1)
+            plot(p_x, p_y, 'Color', 'g','LineWidth',2)
+            plot(all_x(tip_id)-off-1+localIds(tip_id), all_y(tip_id), 'o','LineWidth',2,'Color', 'g')
+        end
+    end    
 end
-%===================================
-    
-     
+%===================================     
 end

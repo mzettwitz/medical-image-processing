@@ -1,6 +1,0 @@
-\beamer@endinputifotherversion {3.24pt}
-\select@language {german}
-\beamer@sectionintoc {1}{Situation}{3}{0}{1}
-\beamer@subsectionintoc {1}{1}{Probleme}{4}{0}{1}
-\beamer@sectionintoc {2}{Konzept}{5}{0}{2}
-\beamer@sectionintoc {3}{Erste Ergebnisse}{6}{0}{3}
