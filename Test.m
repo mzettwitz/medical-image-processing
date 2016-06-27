@@ -1,34 +1,70 @@
+close all;
 clear;
-%Pfad des Ordners, in dem die Dicom-Datein liegeb
-dcm_path = ('D:\Studium\16SoSe\MedBV\medbv_data\medbv_data\p01\'); 
-% Ansammlung Dicom-Dateien
+%============================================== data input 
+% add path to example data
+file = mfilename('fullpath');
+[pathstr,name,ext] = fileparts(file);
+cd(pathstr);
+parent = pwd;
+addpath(genpath(parent));
+
+%=========================
+% choose patient
+patient = 'p01'; %p01,p02,p03
+%=========================
+
+% data path
+dcm_path = (strcat('../data/',patient)); 
 filenames  = dir(fullfile(dcm_path, '*.dcm')); 
-% wir brauchen erstmal nur die Namen der Dateien
 filenames = {filenames.name}; 
-% m = Anzahl aller Dateien
+
+% m = number of files/images
 m = numel(filenames);               
 
+% store images in array
 for k=1:m 
     d = filenames{k}; 
-    f = fullfile(dcm_path , d); 
-    dynamische_variable =  regexprep(d(1:14),'-','_');     
-    bild.(dynamische_variable)=dicomread( f) ;
-    
+    file = fullfile(dcm_path, d); 
+    dyn_var =  regexprep(d(1:14),'-','_');     
+    images.(dyn_var)=dicomread(file);    
 end 
-% Variablen fuer die anisotrope Diffusion
-num_iter = 15;
-delta_t = 1/7;
-kappa = 0.5;
-option = 1;
 
-for k=1:m
+for k=17:m
+    %===========================================
+    % preprocessing
     d = filenames{k};
     d = regexprep(d,'.dcm','');
-    d =regexprep(d,'-','_');  
-  % figure,imshow(bild.(d));
-    bild_anisodiff = anisodiff2D(bild.(d) ,num_iter,delta_t,kappa,option);
-    ui8_bild= uint8(bild_anisodiff);
-    figure,imshow(ui8_bild)
-  % imshow(fimage)
-  % Hough((bild.(d))) 
+    d = regexprep(d,'-','_');  
+    
+    img = images.(d);
+    
+    % window/leveling
+    img_adj = imadjust(img,[0.49, 0.545]);
+    img_adj = im2uint16(img_adj);
+    
+    % print to compare
+    %figure
+    %subplot(2,2,1), imshow(img,[]), title('original')
+    %subplot(2,2,2), imshow(img_adj,[]), title('window/level')
+    
+    
+    % ===============================
+    % ground truth
+    if(false)
+        % read gt files
+        pat_number = patient(3);
+        gt_path = strcat('../data/ground_truth/p', pat_number, '_needle_positions.csv');
+        gt_data = csvread(gt_path, 1, 1);
+        
+        %plot gt 
+        x = [gt_data(k,1) gt_data(k,3)];
+        y = [gt_data(k,2) gt_data(k,4)];
+        figure, imshow(im2int16(img_adj),[]), title('window/level'), hold on
+        plot(x, y, 'Color', 'r','LineWidth',2)
+        hold off
+    end
+    %================================
+    
+    % hough transformation + plotting
+    Hough((img_adj)); 
 end
