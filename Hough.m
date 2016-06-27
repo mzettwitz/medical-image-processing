@@ -1,5 +1,35 @@
 function [p_x, p_y] = Hough(img, numberPeaks)
 
+%=========================================================================
+% Abstract:
+% This function is build to seperate a medical needle out of medical
+% CT-data. For this purpose we use the Hough transformation to find lines in
+% an image. Further we compute several(numberPeaks) Houghpeaks and choose
+% the best candidate of it (highest intensity). There are two options to
+% choose for the segmentation:
+% 1. top of line + brightest point in whole image as tip
+% 2. (recommended)top of line + brightest point on the line + offset as tip
+% There are several options for debugging:
+% 1. plotInternal: plot extra figure to enable debugging of other options
+% 2. option1: plot all line segments of the best houghline candidate
+% 3. optino2: plot min and max point of the best houghline candidate
+% 4. option3: segmentation method1 (global brightest point)
+% 5. option4 = segmentation method2 (local brightest point)
+
+
+% INPUT:
+% img = input image (grey scale)
+% numberPeaks = the maximal number of Houghpeaks to find in this image.
+%               This variable will change the primary needle we find in the
+%               image (more line candidates to for the needle)
+%
+
+% OUTPUT:
+% p_x = min and max x value of the needle
+% p_y = min and max y value of the needle
+%=========================================================================
+
+
 p_x = [0, 0];
 p_y = [0, 0];
 
@@ -111,7 +141,7 @@ end
 
 
 
-%>>>>>>>>>>>>>>>>>>OPTIONS<<<<<<<<<<<<<<<<<<<<<<<<<<<
+%>>>>>>>>>>>>>>>>>>OPTIONS (0/1) <<<<<<<<<<<<<<<<<<<<
 option1 = 0;    % plot all line segments            <
 option2 = 0;    % plot min and max point of line    <
 option3 = 0;    % plot brightest point + needle     <
