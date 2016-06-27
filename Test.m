@@ -10,7 +10,7 @@ addpath(genpath(parent));
 
 %=========================
 % choose patient
-patient = 'p01'; %p01,p02,p03
+patient = 'p03'; %p01,p02,p03
 %=========================
 
 % data path
@@ -29,7 +29,7 @@ for k=1:m
     images.(dyn_var)=dicomread(file);    
 end 
 
-for k=17:m
+for k=1:m
     %===========================================
     % preprocessing
     d = filenames{k};
@@ -42,11 +42,22 @@ for k=17:m
     img_adj = imadjust(img,[0.49, 0.545]);
     img_adj = im2uint16(img_adj);
     
-    % print to compare
-    %figure
-    %subplot(2,2,1), imshow(img,[]), title('original')
-    %subplot(2,2,2), imshow(img_adj,[]), title('window/level')
+     % hough transformation + processing 
+    [p_x, p_y] = Hough((img_adj));
     
+    
+    % print to compare
+    %=====================
+    if(false)
+        figure
+        subplot(2,2,1), imshow(img,[]), title('original')
+        subplot(2,2,2), imshow(img_adj,[]), title('window/level')
+        subplot(2,2,3), imshow(img_adj,[]), title('needle'), hold on
+        plot(p_x, p_y, 'Color', 'g','LineWidth',2), hold off
+    end
+    
+    
+
     
     % ===============================
     % ground truth
@@ -63,8 +74,7 @@ for k=17:m
         plot(x, y, 'Color', 'r','LineWidth',2)
         hold off
     end
-    %================================
+    %================================ 
     
-    % hough transformation + plotting
-    Hough((img_adj)); 
+    plot(p_x, p_y, 'Color', 'g','LineWidth',2)
 end
