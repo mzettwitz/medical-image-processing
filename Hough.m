@@ -216,7 +216,7 @@ end
 if(option4 == 1 && ~isempty(lines))
     
     % offset 
-    off = 6;                          
+    off = 7;                          
     
     % all line points
     [all_x, all_y] = bresenham(min_x, min_y, max_x, max_y);
