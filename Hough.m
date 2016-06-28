@@ -14,7 +14,7 @@ function [p_x, p_y] = Hough(img, numberPeaks)
 % 2. option1: plot all line segments of the best houghline candidate
 % 3. optino2: plot min and max point of the best houghline candidate
 % 4. option3: segmentation method1 (global brightest point)
-% 5. option4 = segmentation method2 (local brightest point)
+% 5. option4: segmentation method2 (local brightest point)
 
 
 % INPUT:
