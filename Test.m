@@ -63,7 +63,7 @@ for k=1:m
     
     % ===============================
     % ground truth
-    if(false)
+    if(true)
         % read gt files
         pat_number = patient(3);
         gt_path = strcat('../data/ground_truth/p', pat_number, '_needle_positions.csv');

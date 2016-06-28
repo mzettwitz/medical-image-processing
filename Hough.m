@@ -67,7 +67,7 @@ if (plotInternal == 1)
     figure, imshow(rotI,[]), title('lines in image'), hold on
 end
 
-% choose #peaks and max needle length
+% choose max needle length
 needleLength = 250;
 
 % setup storage information
