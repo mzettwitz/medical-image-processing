@@ -72,10 +72,18 @@ for k=1:m
         %plot gt 
         x = [gt_data(k,1) gt_data(k,3)];
         y = [gt_data(k,2) gt_data(k,4)];
+        x_spitze = gt_data(k,1);
+        y_spitze = gt_data(k,2);
         plot(x, y, 'Color', 'r','LineWidth',2)  
     end
     %================================ 
     
     plot(p_x, p_y, 'Color', 'g','LineWidth',2)
     hold off
+      
+    if (p_x(1,1) > 0 && x_spitze > 0)
+        abstand(1,k) = sqrt(((p_x(1,1)-x_spitze)^2) + ((p_y(1,1)-y_spitze)^2));
+        winkel(1,k) = atan((p_y(1,1) - p_y(1,2))/ (p_x(1,1) - p_x(1,2)));
+        winkel_gt(1,k) = atan((gt_data(k,4)-y_spitze)/(gt_data(k,3)-x_spitze));
+    end
 end
