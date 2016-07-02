@@ -10,7 +10,7 @@ addpath(genpath(parent));
 
 %=========================
 % choose patient
-patient = 'p03'; %p01,p02,p03
+patient = 'p01'; %p01,p02,p03
 %=========================
 
 % data path
@@ -80,10 +80,12 @@ for k=1:m
     
     plot(p_x, p_y, 'Color', 'g','LineWidth',2)
     hold off
-      
+    vect_p = [p_x(1,1) - p_x(1,2); p_y(1,1) - p_y(1,2)];
+    vect_gt = [x_spitze - gt_data(k,3);y_spitze - gt_data(k,4)];
     if (p_x(1,1) > 0 && x_spitze > 0)
-        abstand(1,k) = sqrt(((p_x(1,1)-x_spitze)^2) + ((p_y(1,1)-y_spitze)^2));
-        winkel(1,k) = atan((p_y(1,1) - p_y(1,2))/ (p_x(1,1) - p_x(1,2)));
-        winkel_gt(1,k) = atan((gt_data(k,4)-y_spitze)/(gt_data(k,3)-x_spitze));
+      abstand(1,k) = sqrt(((p_x(1,1)-x_spitze)^2) + ((p_y(1,1)-y_spitze)^2));
+      % winkel(1,k) = atan((p_y(1,1) - p_y(1,2))/ (p_x(1,1) - p_x(1,2)));
+      %  winkel_gt(1,k) = atan((gt_data(k,4)-y_spitze)/(gt_data(k,3)-x_spitze));
+      winkel(1,k) = acosd(floor(dot(vect_p,vect_gt))/ (abs(vect_p))*(abs(vect_gt)));
     end
 end
