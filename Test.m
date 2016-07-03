@@ -10,7 +10,7 @@ addpath(genpath(parent));
 
 %=========================
 % choose patient
-patient = 'p03'; %p01,p02,p03
+patient = 'p01'; %p01,p02,p03
 %=========================
 
 % data path
@@ -29,6 +29,10 @@ for k=1:m
     images.(dyn_var)=dicomread(file);    
 end 
 
+% storage for comparison
+diff_dist = zeros(1,m);
+diff_angle = zeros(1,m);
+
 for k=1:m
     %===========================================
     % preprocessing
@@ -44,7 +48,6 @@ for k=1:m
     
     % hough transformation + processing 
     [p_x, p_y] = Hough(img_adj,3);
-    
     
     
     %=====================
@@ -73,9 +76,27 @@ for k=1:m
         x = [gt_data(k,1) gt_data(k,3)];
         y = [gt_data(k,2) gt_data(k,4)];
         plot(x, y, 'Color', 'r','LineWidth',2)  
+        
+        % storage for comparison
+        gt_tip = [x(1), y(1)];
+        gt_vec = [x(1) - x(2), y(1) - y(2)];
+        n_tip = [p_x(1), p_y(1)];
+        n_vec = [p_x(1) - p_x(2), p_y(1) - p_y(2)];
+        
+        % compute differences
+        diff_dist(k) = norm(n_tip - gt_tip);
+        diff_angle(k) = acosd(  dot(n_vec,gt_vec) / (norm(n_vec) * norm(gt_vec))  );
+        
     end
     %================================ 
     
     plot(p_x, p_y, 'Color', 'g','LineWidth',2)
     hold off
 end
+
+filename_angle = strcat(patient, '_angle_differences.csv');
+filename_dist = strcat(patient, '_distance_differences.csv');
+csvwrite(filename_dist,diff_dist);
+csvwrite(filename_angle, diff_angle);
+diff_dist
+diff_angle
