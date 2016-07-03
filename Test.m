@@ -10,7 +10,7 @@ addpath(genpath(parent));
 
 %=========================
 % choose patient
-patient = 'p01'; %p01,p02,p03
+patient = 'p03'; %p01,p02,p03
 %=========================
 
 % data path
@@ -49,7 +49,6 @@ for k=1:m
     % hough transformation + processing 
     [p_x, p_y] = Hough(img_adj,3);
     
-    
     %=====================
     % print to compare
     if(false)
@@ -71,6 +70,7 @@ for k=1:m
         pat_number = patient(3);
         gt_path = strcat('../data/ground_truth/p', pat_number, '_needle_positions.csv');
         gt_data = csvread(gt_path, 1, 1);
+          
         
         %plot gt 
         x = [gt_data(k,1) gt_data(k,3)];

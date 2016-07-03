@@ -30,8 +30,8 @@ function [p_x, p_y] = Hough(img, numberPeaks)
 %=========================================================================
 
 
-p_x = [0, 0];
-p_y = [0, 0];
+p_x = [NaN, NaN];
+p_y = [NaN, NaN];
 
 % 0/1 to plot internal in extra window
 plotInternal = 0;
